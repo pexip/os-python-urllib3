@@ -1,6 +1,7 @@
 Source: python-urllib3
-Maintainer: Debian Python Modules Team <python-modules-team@lists.alioth.debian.org>
-Uploaders: Daniele Tricoli <eriol@mornie.org>
+Maintainer: Pexip AS <packaging@pexip.com>
+XSBC-Pexip-Original-Maintainer: Debian Python Modules Team <python-modules-team@lists.alioth.debian.org>
+XSBC-Pexip-Original-Uploaders: Daniele Tricoli <eriol@mornie.org>
 Section: python
 Priority: optional
 Build-Depends:
@@ -27,6 +28,7 @@ X-Python3-Version: >= 3.0
 Homepage: http://urllib3.readthedocs.org
 Vcs-Git: git://anonscm.debian.org/python-modules/packages/python-urllib3.git
 Vcs-Browser: https://anonscm.debian.org/cgit/python-modules/packages/python-urllib3.git
+XS-Pexip-Upstream: http://ftp.debian.org/debian/ stretch
 
 Package: python-urllib3
 Architecture: all

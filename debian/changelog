@@ -1,3 +1,9 @@
+python-urllib3 (1.13.1-1pexip1) pexip; urgency=low
+
+  * Prepare Pexip packaging
+
+ -- John-Mark Bell <jmb@pexip.com>  Fri, 18 Mar 2016 17:00:47 +0000
+
 python-urllib3 (1.13.1-1) unstable; urgency=medium
 
   * New upstream release.
