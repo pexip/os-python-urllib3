@@ -6,12 +6,10 @@ import unittest
 import time
 import warnings
 
-import mock
+from datetime import datetime
+from datetime import timedelta
 
-try:
-    from urllib.parse import urlencode
-except:
-    from urllib import urlencode
+import mock
 
 from .. import (
     requires_network, onlyPy3, onlyPy26OrOlder,
@@ -32,7 +30,8 @@ from urllib3.exceptions import (
     NewConnectionError,
 )
 from urllib3.packages.six import b, u
-from urllib3.util.retry import Retry
+from urllib3.packages.six.moves.urllib.parse import urlencode
+from urllib3.util.retry import Retry, RequestHistory
 from urllib3.util.timeout import Timeout
 
 from dummyserver.testcase import HTTPDummyServerTestCase, SocketDummyServerTestCase
@@ -774,6 +773,102 @@ class TestRetry(HTTPDummyServerTestCase):
                                  headers=headers, retries=retry)
         self.assertEqual(resp.status, 200)
 
+    def test_retry_return_in_response(self):
+        headers = {'test-name': 'test_retry_return_in_response'}
+        retry = Retry(total=2, status_forcelist=[418])
+        resp = self.pool.request('GET', '/successful_retry',
+                                 headers=headers, retries=retry)
+        self.assertEqual(resp.status, 200)
+        self.assertEqual(resp.retries.total, 1)
+        self.assertEqual(resp.retries.history, (RequestHistory('GET', '/successful_retry', None, 418, None),))
+
+    def test_retry_redirect_history(self):
+        resp = self.pool.request('GET', '/redirect', fields={'target': '/'})
+        self.assertEqual(resp.status, 200)
+        self.assertEqual(resp.retries.history, (RequestHistory('GET', '/redirect?target=%2F', None, 303, '/'),))
+
+    def test_multi_redirect_history(self):
+        r = self.pool.request('GET', '/multi_redirect', fields={'redirect_codes': '303,302,200'}, redirect=False)
+        self.assertEqual(r.status, 303)
+        self.assertEqual(r.retries.history, tuple())
+
+        r = self.pool.request('GET', '/multi_redirect', retries=10,
+                              fields={'redirect_codes': '303,302,301,307,302,200'})
+        self.assertEqual(r.status, 200)
+        self.assertEqual(r.data, b'Done redirecting')
+        self.assertEqual([(request_history.status, request_history.redirect_location) for request_history in r.retries.history], [
+            (303, '/multi_redirect?redirect_codes=302,301,307,302,200'),
+            (302, '/multi_redirect?redirect_codes=301,307,302,200'),
+            (301, '/multi_redirect?redirect_codes=307,302,200'),
+            (307, '/multi_redirect?redirect_codes=302,200'),
+            (302, '/multi_redirect?redirect_codes=200')
+        ])
+
+
+class TestRetryAfter(HTTPDummyServerTestCase):
+    def setUp(self):
+        self.pool = HTTPConnectionPool(self.host, self.port)
+
+    def test_retry_after(self):
+        # Request twice in a second to get a 429 response.
+        r = self.pool.request('GET', '/retry_after',
+                fields={'status': '429 Too Many Requests'},
+                retries=False)
+        r = self.pool.request('GET', '/retry_after',
+                fields={'status': '429 Too Many Requests'},
+                retries=False)
+        self.assertEqual(r.status, 429)
+
+        r = self.pool.request('GET', '/retry_after',
+                fields={'status': '429 Too Many Requests'},
+                retries=True)
+        self.assertEqual(r.status, 200)
+
+        # Request twice in a second to get a 503 response.
+        r = self.pool.request('GET', '/retry_after',
+                fields={'status': '503 Service Unavailable'},
+                retries=False)
+        r = self.pool.request('GET', '/retry_after',
+                fields={'status': '503 Service Unavailable'},
+                retries=False)
+        self.assertEqual(r.status, 503)
+
+        r = self.pool.request('GET', '/retry_after',
+                fields={'status': '503 Service Unavailable'},
+                retries=True)
+        self.assertEqual(r.status, 200)
+
+        # Ignore Retry-After header on status which is not defined in
+        # Retry.RETRY_AFTER_STATUS_CODES.
+        r = self.pool.request('GET', '/retry_after',
+                fields={'status': "418 I'm a teapot"},
+                retries=True)
+        self.assertEqual(r.status, 418)
+
+    def test_redirect_after(self):
+        r = self.pool.request('GET', '/redirect_after', retries=False)
+        self.assertEqual(r.status, 303)
+
+        t = time.time()
+        r = self.pool.request('GET', '/redirect_after')
+        self.assertEqual(r.status, 200)
+        delta = time.time() - t
+        self.assertTrue(delta >= 1)
+
+        t = time.time()
+        timestamp = t + 2
+        r = self.pool.request('GET', '/redirect_after?date=' + str(timestamp))
+        self.assertEqual(r.status, 200)
+        delta = time.time() - t
+        self.assertTrue(delta >= 1)
+
+        # Retry-After is past
+        t = time.time()
+        timestamp = t - 1
+        r = self.pool.request('GET', '/redirect_after?date=' + str(timestamp))
+        delta = time.time() - t
+        self.assertEqual(r.status, 200)
+        self.assertTrue(delta < 1)
 
 if __name__ == '__main__':
     unittest.main()

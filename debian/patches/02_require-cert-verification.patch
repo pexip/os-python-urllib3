@@ -1,4 +1,4 @@
-From f52be2bcb24472e3b746c449f58fed0eb3775094 Mon Sep 17 00:00:00 2001
+From dcd89660d546c3d46c7778278c0143e0602b4a20 Mon Sep 17 00:00:00 2001
 From: Jamie Strandboge <jamie@canonical.com>
 Date: Thu, 8 Oct 2015 13:19:47 -0700
 Subject: require SSL certificate validation by default by using
@@ -14,10 +14,10 @@ Patch-Name: 02_require-cert-verification.patch
  1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/urllib3/connectionpool.py b/urllib3/connectionpool.py
-index 2204b30..ef60000 100644
+index ad8f35a..a3a328e 100644
 --- a/urllib3/connectionpool.py
 +++ b/urllib3/connectionpool.py
-@@ -683,6 +683,8 @@ class HTTPSConnectionPool(HTTPConnectionPool):
+@@ -735,6 +735,8 @@ class HTTPSConnectionPool(HTTPConnectionPool):
      ``ca_cert_dir``, and ``ssl_version`` are only used if :mod:`ssl` is
      available and are fed into :meth:`urllib3.util.ssl_wrap_socket` to upgrade
      the connection socket into an SSL socket.
@@ -26,7 +26,7 @@ index 2204b30..ef60000 100644
      """
  
      scheme = 'https'
-@@ -692,8 +694,8 @@ class HTTPSConnectionPool(HTTPConnectionPool):
+@@ -744,8 +746,8 @@ class HTTPSConnectionPool(HTTPConnectionPool):
                   strict=False, timeout=Timeout.DEFAULT_TIMEOUT, maxsize=1,
                   block=False, headers=None, retries=None,
                   _proxy=None, _proxy_headers=None,

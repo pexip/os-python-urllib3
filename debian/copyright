@@ -4,7 +4,7 @@ Upstream-Contact: Andrey Petrov <andrey.petrov@shazow.net>
 Source: http://pypi.python.org/pypi/urllib3
 
 Files: *
-Copyright: 2008-2013, Andrey Petrov
+Copyright: 2008-2016, Andrey Petrov
 License: Expat
 
 Files: urllib3/packages/six.py
@@ -20,7 +20,7 @@ Copyright: 2011, Python Software Foundation
 License: PSF-2
 
 Files: debian/*
-Copyright: 2012-2014, Daniele Tricoli <eriol@mornie.org>
+Copyright: 2012-2016, Daniele Tricoli <eriol@mornie.org>
 License: Expat
 
 License: Expat
