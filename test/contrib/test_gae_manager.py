@@ -15,10 +15,10 @@ from urllib3.exceptions import (
     ProtocolError,
     SSLError)
 from urllib3.util.url import Url
-from urllib3.util.retry import Retry
+from urllib3.util.retry import Retry, RequestHistory
 
 from test.with_dummyserver.test_connectionpool import (
-    TestConnectionPool, TestRetry)
+    TestConnectionPool, TestRetry, TestRetryAfter)
 
 
 # Prevent nose from running these test.
@@ -177,8 +177,35 @@ class TestGAERetry(TestRetry):
             retries=retry)
         self.assertEqual(resp.status, 200)
 
+    def test_retry_return_in_response(self):
+        headers = {'test-name': 'test_retry_return_in_response'}
+        retry = Retry(total=2, status_forcelist=[418])
+        resp = self.pool.request('GET', '/successful_retry',
+                                 headers=headers, retries=retry)
+        self.assertEqual(resp.status, 200)
+        self.assertEqual(resp.retries.total, 1)
+        # URLFetch use absolute urls.
+        self.assertEqual(resp.retries.history,
+                         (RequestHistory('GET',
+                                         self.pool._absolute_url('/successful_retry'),
+                                         None, 418, None),))
+
     #test_max_retry = None
     #test_disabled_retry = None
+    # We don't need these tests because URLFetch resolves its own redirects.
+    test_retry_redirect_history = None
+    test_multi_redirect_history = None
+
+class TestGAERetryAfter(TestRetryAfter):
+    __test__ = True
+
+    # Magic class variable that tells NoseGAE to enable the URLFetch stub.
+    nosegae_urlfetch = True
+
+    def setUp(self):
+        # Disable urlfetch which doesn't respect Retry-After header.
+        self.manager = AppEngineManager(urlfetch_retries=False)
+        self.pool = MockPool(self.host, self.port, self.manager)
 
 
 if __name__ == '__main__':
