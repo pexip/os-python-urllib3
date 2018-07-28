@@ -1,3 +1,66 @@
+python-urllib3 (1.19.1-1pexip1) pexip; urgency=low
+
+  * New upstream release
+
+ -- John-Mark Bell <jmb@pexip.com>  Sat, 28 Jul 2018 23:51:11 +0100
+
+python-urllib3 (1.19.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/control
+    - Remove python{,3}-ndg-httpsclient and python{,3}-pyasn1.
+    - Add python{,3}-cryptography, python{,3}-idna and python-ipaddress.
+  * debian/patches/01_do-not-use-embedded-python-six.patch
+    - Refresh.
+
+ -- Daniele Tricoli <eriol@mornie.org>  Thu, 08 Dec 2016 15:08:04 +0100
+
+python-urllib3 (1.16-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Daniele Tricoli <eriol@mornie.org>  Sun, 04 Sep 2016 01:21:05 +0200
+
+python-urllib3 (1.15.1-2) unstable; urgency=medium
+
+  * debian/patches/01_do-not-use-embedded-python-six.patch
+    - Patch urllib3.contrib.appengine and dummyserver tests. (Closes: #825310)
+
+ -- Daniele Tricoli <eriol@mornie.org>  Thu, 26 May 2016 05:11:02 +0200
+
+python-urllib3 (1.15.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/control
+    - Bump Standards-Version to 3.9.8 (no changes needed).
+    - Add python{,3}-socks to Suggests.
+  * debian/copyright
+    - Update copyright years.
+  * debian/patches/01_do-not-use-embedded-python-six.patch
+    - Refresh.
+  * debian/rules
+    - Don't run contrib socks tests at build time.
+    - Exclude GAE tests. (Closes: #825168)
+
+ -- Daniele Tricoli <eriol@mornie.org>  Tue, 24 May 2016 16:18:22 +0200
+
+python-urllib3 (1.13.1-2) unstable; urgency=medium
+
+  * debian/control
+    - Remove python-urllib3-whl and python3-wheel B-D. (Closes: #814467)
+    - Use secure URI for Vcs-Git.
+    - Bump Standards-Version to 3.9.7 (no changes needed).
+    - Bump X-Python3-Version to >= 3.2.
+  * debian/copyright
+    - Update copyright years.
+  * debian/python-urllib3-whl.install
+    - Remove.
+  * debian/rules
+    - Remove override_dh_auto_install since it's no longer needed to build the
+      wheel package.
+
+ -- Daniele Tricoli <eriol@mornie.org>  Fri, 12 Feb 2016 01:35:42 +0100
+
 python-urllib3 (1.13.1-1pexip2) pexip; urgency=low
 
   * Reinstate python3 build

@@ -1,4 +1,4 @@
-From 468650ebc00a3c8458882bc83a1616aece7e2705 Mon Sep 17 00:00:00 2001
+From 37999f5181c1aec2ea41370cb82e5f559a7ba59c Mon Sep 17 00:00:00 2001
 From: Stefano Rivera <stefanor@debian.org>
 Date: Thu, 8 Oct 2015 13:19:51 -0700
 Subject: Do not use embedded copy of ssl.match_hostname, when possible

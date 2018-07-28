@@ -1,169 +1,271 @@
 Metadata-Version: 1.1
 Name: urllib3
-Version: 1.13.1
+Version: 1.19.1
 Summary: HTTP library with thread-safe connection pooling, file post, and more.
-Home-page: http://urllib3.readthedocs.org/
+Home-page: https://urllib3.readthedocs.io/
 Author: Andrey Petrov
 Author-email: andrey.petrov@shazow.net
 License: MIT
-Description: =======
-        urllib3
+Description: urllib3
         =======
         
         .. image:: https://travis-ci.org/shazow/urllib3.png?branch=master
+                :alt: Build status on Travis
                 :target: https://travis-ci.org/shazow/urllib3
         
+        .. image:: https://readthedocs.org/projects/urllib3/badge/?version=latest
+                :alt: Documentation Status
+                :target: https://urllib3.readthedocs.io/en/latest/
+        
+        .. image:: https://img.shields.io/pypi/v/urllib3.svg?maxAge=86400
+                :alt: PyPI version
+                :target: https://pypi.python.org/pypi/urllib3
+        
         .. image:: https://www.bountysource.com/badge/tracker?tracker_id=192525
+                :alt: Bountysource
                 :target: https://www.bountysource.com/trackers/192525-urllib3?utm_source=192525&utm_medium=shield&utm_campaign=TRACKER_BADGE
         
+        urllib3 is a powerful, *sanity-friendly* HTTP client for Python. Much of the
+        Python ecosystem already uses urllib3 and you should too.
+        urllib3 brings many critical features that are missing from the Python
+        standard libraries:
         
-        Highlights
-        ==========
+        - Thread safety.
+        - Connection pooling.
+        - Client-side SSL/TLS verification.
+        - File uploads with multipart encoding.
+        - Helpers for retrying requests and dealing with HTTP redirects.
+        - Support for gzip and deflate encoding.
+        - Proxy support for HTTP and SOCKS.
+        - 100% test coverage.
         
-        - Re-use the same socket connection for multiple requests
-          (``HTTPConnectionPool`` and ``HTTPSConnectionPool``)
-          (with optional client-side certificate verification).
-        - File posting (``encode_multipart_formdata``).
-        - Built-in redirection and retries (optional).
-        - Supports gzip and deflate decoding.
-        - Thread-safe and sanity-safe.
-        - Works with AppEngine, gevent, and eventlib.
-        - Tested on Python 2.6+, Python 3.2+, and PyPy, with 100% unit test coverage.
-        - Small and easy to understand codebase perfect for extending and building upon.
-          For a more comprehensive solution, have a look at
-          `Requests <http://python-requests.org/>`_ which is also powered by ``urllib3``.
+        urllib3 is powerful and easy to use::
         
+            >>> import urllib3
+            >>> http = urllib3.PoolManager()
+            >>> r = http.request('GET', 'http://httpbin.org/robots.txt')
+            >>> r.status
+            200
+            >>> r.data
+            'User-agent: *\nDisallow: /deny\n'
         
-        You might already be using urllib3!
-        ===================================
+        Installing
+        ----------
         
-        ``urllib3`` powers `many great Python libraries
-        <https://sourcegraph.com/search?q=package+urllib3>`_, including ``pip`` and
-        ``requests``.
+        urllib3 can be installed with `pip <https://pip.pypa.io>`_::
         
+            $ pip install urllib3
         
-        What's wrong with urllib and urllib2?
-        =====================================
+        Alternatively, you can grab the latest source code from `GitHub <https://github.com/shazow/urllib3>`_::
         
-        There are two critical features missing from the Python standard library:
-        Connection re-using/pooling and file posting. It's not terribly hard to
-        implement these yourself, but it's much easier to use a module that already
-        did the work for you.
-        
-        The Python standard libraries ``urllib`` and ``urllib2`` have little to do
-        with each other. They were designed to be independent and standalone, each
-        solving a different scope of problems, and ``urllib3`` follows in a similar
-        vein.
+            $ git clone git://github.com/shazow/urllib3.git
+            $ python setup.py install
         
         
-        Why do I want to reuse connections?
-        ===================================
+        Documentation
+        -------------
         
-        Performance. When you normally do a urllib call, a separate socket
-        connection is created with each request. By reusing existing sockets
-        (supported since HTTP 1.1), the requests will take up less resources on the
-        server's end, and also provide a faster response time at the client's end.
-        With some simple benchmarks (see `test/benchmark.py
-        <https://github.com/shazow/urllib3/blob/master/test/benchmark.py>`_
-        ), downloading 15 URLs from google.com is about twice as fast when using
-        HTTPConnectionPool (which uses 1 connection) than using plain urllib (which
-        uses 15 connections).
-        
-        This library is perfect for:
-        
-        - Talking to an API
-        - Crawling a website
-        - Any situation where being able to post files, handle redirection, and
-          retrying is useful. It's relatively lightweight, so it can be used for
-          anything!
-        
-        
-        Examples
-        ========
-        
-        Go to `urllib3.readthedocs.org <http://urllib3.readthedocs.org>`_
-        for more nice syntax-highlighted examples.
-        
-        But, long story short::
-        
-          import urllib3
-        
-          http = urllib3.PoolManager()
-        
-          r = http.request('GET', 'http://google.com/')
-        
-          print r.status, r.data
-        
-        The ``PoolManager`` will take care of reusing connections for you whenever
-        you request the same host. For more fine-grained control of your connection
-        pools, you should look at `ConnectionPool
-        <http://urllib3.readthedocs.org/#connectionpool>`_.
-        
-        
-        Run the tests
-        =============
-        
-        We use some external dependencies, multiple interpreters and code coverage
-        analysis while running test suite. Our ``Makefile`` handles much of this for
-        you as long as you're running it `inside of a virtualenv
-        <http://docs.python-guide.org/en/latest/dev/virtualenvs/>`_::
-        
-          $ make test
-          [... magically installs dependencies and runs tests on your virtualenv]
-          Ran 182 tests in 1.633s
-        
-          OK (SKIP=6)
-        
-        Note that code coverage less than 100% is regarded as a failing run. Some
-        platform-specific tests are skipped unless run in that platform.  To make sure
-        the code works in all of urllib3's supported platforms, you can run our ``tox``
-        suite::
-        
-          $ make test-all
-          [... tox creates a virtualenv for every platform and runs tests inside of each]
-          py26: commands succeeded
-          py27: commands succeeded
-          py32: commands succeeded
-          py33: commands succeeded
-          py34: commands succeeded
-        
-        Our test suite `runs continuously on Travis CI
-        <https://travis-ci.org/shazow/urllib3>`_ with every pull request.
+        urllib3 has usage and reference documentation at `urllib3.readthedocs.io <https://urllib3.readthedocs.io>`_.
         
         
         Contributing
-        ============
+        ------------
         
-        #. `Check for open issues <https://github.com/shazow/urllib3/issues>`_ or open
-           a fresh issue to start a discussion around a feature idea or a bug. There is
-           a *Contributor Friendly* tag for issues that should be ideal for people who
-           are not very familiar with the codebase yet.
-        #. Fork the `urllib3 repository on Github <https://github.com/shazow/urllib3>`_
-           to start making your changes.
-        #. Write a test which shows that the bug was fixed or that the feature works
-           as expected.
-        #. Send a pull request and bug the maintainer until it gets merged and published.
-           :) Make sure to add yourself to ``CONTRIBUTORS.txt``.
+        urllib3 happily accepts contributions. Please see our
+        `contributing documentation <https://urllib3.readthedocs.io/en/latest/contributing.html>`_
+        for some tips on getting started.
         
+        Maintainers
+        -----------
+        
+        - `@lukasa <https://github.com/lukasa>`_ (Cory Benfield)
+        - `@sigmavirus24 <https://github.com/sigmavirus24>`_ (Ian Cordasco)
+        - `@shazow <https://github.com/shazow>`_ (Andrey Petrov)
+        
+        👋
         
         Sponsorship
-        ===========
+        -----------
         
         If your company benefits from this library, please consider `sponsoring its
-        development <http://urllib3.readthedocs.org/en/latest/#sponsorship>`_.
+        development <https://urllib3.readthedocs.io/en/latest/contributing.html#sponsorship>`_.
         
         
         Changes
         =======
         
+        1.19.1 (2016-11-16)
+        -------------------
+        
+        * Fixed AppEngine import that didn't function on Python 3.5. (Pull #1025)
+        
+        1.19 (2016-11-03)
+        -----------------
+        
+        * urllib3 now respects Retry-After headers on 413, 429, and 503 responses when
+          using the default retry logic. (Pull #955)
+        
+        * Remove markers from setup.py to assist ancient setuptools versions. (Issue
+          #986)
+        
+        * Disallow superscripts and other integerish things in URL ports. (Issue #989)
+        
+        * Allow urllib3's HTTPResponse.stream() method to continue to work with
+          non-httplib underlying FPs. (Pull #990)
+        
+        * Empty filenames in multipart headers are now emitted as such, rather than
+          being supressed. (Issue #1015)
+        
+        * Prefer user-supplied Host headers on chunked uploads. (Issue #1009)
+        
+        
+        1.18.1 (2016-10-27)
+        -------------------
+        
+        * CVE-2016-9015. Users who are using urllib3 version 1.17 or 1.18 along with
+          PyOpenSSL injection and OpenSSL 1.1.0 *must* upgrade to this version. This
+          release fixes a vulnerability whereby urllib3 in the above configuration
+          would silently fail to validate TLS certificates due to erroneously setting
+          invalid flags in OpenSSL's ``SSL_CTX_set_verify`` function. These erroneous
+          flags do not cause a problem in OpenSSL versions before 1.1.0, which
+          interprets the presence of any flag as requesting certificate validation.
+        
+          There is no PR for this patch, as it was prepared for simultaneous disclosure
+          and release. The master branch received the same fix in PR #1010.
+        
+        
+        1.18 (2016-09-26)
+        -----------------
+        
+        * Fixed incorrect message for IncompleteRead exception. (PR #973)
+        
+        * Accept ``iPAddress`` subject alternative name fields in TLS certificates.
+          (Issue #258)
+        
+        * Fixed consistency of ``HTTPResponse.closed`` between Python 2 and 3.
+          (Issue #977)
+        
+        * Fixed handling of wildcard certificates when using PyOpenSSL. (Issue #979)
+        
+        
+        1.17 (2016-09-06)
+        -----------------
+        
+        * Accept ``SSLContext`` objects for use in SSL/TLS negotiation. (Issue #835)
+        
+        * ConnectionPool debug log now includes scheme, host, and port. (Issue #897)
+        
+        * Substantially refactored documentation. (Issue #887)
+        
+        * Used URLFetch default timeout on AppEngine, rather than hardcoding our own.
+          (Issue #858)
+        
+        * Normalize the scheme and host in the URL parser (Issue #833)
+        
+        * ``HTTPResponse`` contains the last ``Retry`` object, which now also
+          contains retries history. (Issue #848)
+        
+        * Timeout can no longer be set as boolean, and must be greater than zero.
+          (PR #924)
+        
+        * Removed pyasn1 and ndg-httpsclient from dependencies used for PyOpenSSL. We
+          now use cryptography and idna, both of which are already dependencies of
+          PyOpenSSL. (PR #930)
+        
+        * Fixed infinite loop in ``stream`` when amt=None. (Issue #928)
+        
+        * Try to use the operating system's certificates when we are using an
+          ``SSLContext``. (PR #941)
+        
+        * Updated cipher suite list to allow ChaCha20+Poly1305. AES-GCM is preferred to
+          ChaCha20, but ChaCha20 is then preferred to everything else. (PR #947)
+        
+        * Updated cipher suite list to remove 3DES-based cipher suites. (PR #958)
+        
+        * Removed the cipher suite fallback to allow HIGH ciphers. (PR #958)
+        
+        * Implemented ``length_remaining`` to determine remaining content
+          to be read. (PR #949)
+        
+        * Implemented ``enforce_content_length`` to enable exceptions when
+          incomplete data chunks are received. (PR #949)
+        
+        * Dropped connection start, dropped connection reset, redirect, forced retry,
+          and new HTTPS connection log levels to DEBUG, from INFO. (PR #967)
+        
+        
+        1.16 (2016-06-11)
+        -----------------
+        
+        * Disable IPv6 DNS when IPv6 connections are not possible. (Issue #840)
+        
+        * Provide ``key_fn_by_scheme`` pool keying mechanism that can be
+          overridden. (Issue #830)
+        
+        * Normalize scheme and host to lowercase for pool keys, and include
+          ``source_address``. (Issue #830)
+        
+        * Cleaner exception chain in Python 3 for ``_make_request``.
+          (Issue #861)
+        
+        * Fixed installing ``urllib3[socks]`` extra. (Issue #864)
+        
+        * Fixed signature of ``ConnectionPool.close`` so it can actually safely be
+          called by subclasses. (Issue #873)
+        
+        * Retain ``release_conn`` state across retries. (Issues #651, #866)
+        
+        * Add customizable ``HTTPConnectionPool.ResponseCls``, which defaults to
+          ``HTTPResponse`` but can be replaced with a subclass. (Issue #879)
+        
+        
+        1.15.1 (2016-04-11)
+        -------------------
+        
+        * Fix packaging to include backports module. (Issue #841)
+        
+        
+        1.15 (2016-04-06)
+        -----------------
+        
+        * Added Retry(raise_on_status=False). (Issue #720)
+        
+        * Always use setuptools, no more distutils fallback. (Issue #785)
+        
+        * Dropped support for Python 3.2. (Issue #786)
+        
+        * Chunked transfer encoding when requesting with ``chunked=True``.
+          (Issue #790)
+        
+        * Fixed regression with IPv6 port parsing. (Issue #801)
+        
+        * Append SNIMissingWarning messages to allow users to specify it in
+          the PYTHONWARNINGS environment variable. (Issue #816)
+        
+        * Handle unicode headers in Py2. (Issue #818)
+        
+        * Log certificate when there is a hostname mismatch. (Issue #820)
+        
+        * Preserve order of request/response headers. (Issue #821)
+        
+        
+        1.14 (2015-12-29)
+        -----------------
+        
+        * contrib: SOCKS proxy support! (Issue #762)
+        
+        * Fixed AppEngine handling of transfer-encoding header and bug
+          in Timeout defaults checking. (Issue #763)
+        
+        
         1.13.1 (2015-12-18)
-        +++++++++++++++++++
+        -------------------
         
         * Fixed regression in IPv6 + SSL for match_hostname. (Issue #761)
         
         
         1.13 (2015-12-14)
-        +++++++++++++++++
+        -----------------
         
         * Fixed ``pip install urllib3[secure]`` on modern pip. (Issue #706)
         
@@ -180,7 +282,7 @@ Description: =======
         
         
         1.12 (2015-09-03)
-        +++++++++++++++++
+        -----------------
         
         * Rely on ``six`` for importing ``httplib`` to work around
           conflicts with other Python 3 shims. (Issue #688)
@@ -193,7 +295,7 @@ Description: =======
         
         
         1.11 (2015-07-21)
-        +++++++++++++++++
+        -----------------
         
         * When ``ca_certs`` is given, ``cert_reqs`` defaults to
           ``'CERT_REQUIRED'``. (Issue #650)
@@ -204,7 +306,7 @@ Description: =======
         * Made ``HTTPHeaderDict`` usable as a ``headers`` input value
           (Issues #632, #679)
         
-        * Added `urllib3.contrib.appengine <https://urllib3.readthedocs.org/en/latest/contrib.html#google-app-engine>`_
+        * Added `urllib3.contrib.appengine <https://urllib3.readthedocs.io/en/latest/contrib.html#google-app-engine>`_
           which has an ``AppEngineManager`` for using ``URLFetch`` in a
           Google AppEngine environment. (Issue #664)
         
@@ -238,7 +340,7 @@ Description: =======
           (Issue #674)
         
         1.10.4 (2015-05-03)
-        +++++++++++++++++++
+        -------------------
         
         * Migrate tests to Tornado 4. (Issue #594)
         
@@ -254,7 +356,7 @@ Description: =======
         
         
         1.10.3 (2015-04-21)
-        +++++++++++++++++++
+        -------------------
         
         * Emit ``InsecurePlatformWarning`` when SSLContext object is missing.
           (Issue #558)
@@ -275,7 +377,7 @@ Description: =======
         
         
         1.10.2 (2015-02-25)
-        +++++++++++++++++++
+        -------------------
         
         * Fix file descriptor leakage on retries. (Issue #548)
         
@@ -287,7 +389,7 @@ Description: =======
         
         
         1.10.1 (2015-02-10)
-        +++++++++++++++++++
+        -------------------
         
         * Pools can be used as context managers. (Issue #545)
         
@@ -301,7 +403,7 @@ Description: =======
         
         
         1.10 (2014-12-14)
-        +++++++++++++++++
+        -----------------
         
         * Disabled SSLv3. (Issue #473)
         
@@ -333,7 +435,7 @@ Description: =======
         
         
         1.9.1 (2014-09-13)
-        ++++++++++++++++++
+        ------------------
         
         * Apply socket arguments before binding. (Issue #427)
         
@@ -354,14 +456,14 @@ Description: =======
         
         
         1.9 (2014-07-04)
-        ++++++++++++++++
+        ----------------
         
         * Shuffled around development-related files. If you're maintaining a distro
           package of urllib3, you may need to tweak things. (Issue #415)
         
         * Unverified HTTPS requests will trigger a warning on the first request. See
           our new `security documentation
-          <https://urllib3.readthedocs.org/en/latest/security.html>`_ for details.
+          <https://urllib3.readthedocs.io/en/latest/security.html>`_ for details.
           (Issue #426)
         
         * New retry logic and ``urllib3.util.retry.Retry`` configuration object.
@@ -391,7 +493,7 @@ Description: =======
         
         
         1.8.3 (2014-06-23)
-        ++++++++++++++++++
+        ------------------
         
         * Fix TLS verification when using a proxy in Python 3.4.1. (Issue #385)
         
@@ -413,13 +515,13 @@ Description: =======
         
         
         1.8.2 (2014-04-17)
-        ++++++++++++++++++
+        ------------------
         
         * Fix ``urllib3.util`` not being included in the package.
         
         
         1.8.1 (2014-04-17)
-        ++++++++++++++++++
+        ------------------
         
         * Fix AppEngine bug of HTTPS requests going out as HTTP. (Issue #356)
         
@@ -430,7 +532,7 @@ Description: =======
         
         
         1.8 (2014-03-04)
-        ++++++++++++++++
+        ----------------
         
         * Improved url parsing in ``urllib3.util.parse_url`` (properly parse '@' in
           username, and blank ports like 'hostname:').
@@ -482,7 +584,7 @@ Description: =======
         
         
         1.7.1 (2013-09-25)
-        ++++++++++++++++++
+        ------------------
         
         * Added granular timeout support with new ``urllib3.util.Timeout`` class.
           (Issue #231)
@@ -491,7 +593,7 @@ Description: =======
         
         
         1.7 (2013-08-14)
-        ++++++++++++++++
+        ----------------
         
         * More exceptions are now pickle-able, with tests. (Issue #174)
         
@@ -530,7 +632,7 @@ Description: =======
         
         
         1.6 (2013-04-25)
-        ++++++++++++++++
+        ----------------
         
         * Contrib: Optional SNI support for Py2 using PyOpenSSL. (Issue #156)
         
@@ -590,7 +692,7 @@ Description: =======
         
         
         1.5 (2012-08-02)
-        ++++++++++++++++
+        ----------------
         
         * Added ``urllib3.add_stderr_logger()`` for quickly enabling STDERR debug
           logging in urllib3.
@@ -615,7 +717,7 @@ Description: =======
         
         
         1.4 (2012-06-16)
-        ++++++++++++++++
+        ----------------
         
         * Minor AppEngine-related fixes.
         
@@ -627,7 +729,7 @@ Description: =======
         
         
         1.3 (2012-03-25)
-        ++++++++++++++++
+        ----------------
         
         * Removed pre-1.0 deprecated API.
         
@@ -646,13 +748,13 @@ Description: =======
         
         
         1.2.2 (2012-02-06)
-        ++++++++++++++++++
+        ------------------
         
         * Fixed packaging bug of not shipping ``test-requirements.txt``. (Issue #47)
         
         
         1.2.1 (2012-02-05)
-        ++++++++++++++++++
+        ------------------
         
         * Fixed another bug related to when ``ssl`` module is not available. (Issue #41)
         
@@ -661,7 +763,7 @@ Description: =======
         
         
         1.2 (2012-01-29)
-        ++++++++++++++++
+        ----------------
         
         * Added Python 3 support (tested on 3.2.2)
         
@@ -687,7 +789,7 @@ Description: =======
         
         
         1.1 (2012-01-07)
-        ++++++++++++++++
+        ----------------
         
         * Refactored ``dummyserver`` to its own root namespace module (used for
           testing).
@@ -704,7 +806,7 @@ Description: =======
         
         
         1.0.2 (2011-11-04)
-        ++++++++++++++++++
+        ------------------
         
         * Fixed typo in ``VerifiedHTTPSConnection`` which would only present as a bug if
           you're using the object manually. (Thanks pyos)
@@ -717,14 +819,14 @@ Description: =======
         
         
         1.0.1 (2011-10-10)
-        ++++++++++++++++++
+        ------------------
         
         * Fixed a bug where the same connection would get returned into the pool twice,
           causing extraneous "HttpConnectionPool is full" log warnings.
         
         
         1.0 (2011-10-08)
-        ++++++++++++++++
+        ----------------
         
         * Added ``PoolManager`` with LRU expiration of connections (tested and
           documented).
@@ -747,13 +849,13 @@ Description: =======
         
         
         0.4.1 (2011-07-17)
-        ++++++++++++++++++
+        ------------------
         
         * Minor bug fixes, code cleanup.
         
         
         0.4 (2011-03-01)
-        ++++++++++++++++
+        ----------------
         
         * Better unicode support.
         * Added ``VerifiedHTTPSConnection``.
@@ -762,13 +864,13 @@ Description: =======
         
         
         0.3.1 (2010-07-13)
-        ++++++++++++++++++
+        ------------------
         
         * Added ``assert_host_name`` optional parameter. Now compatible with proxies.
         
         
         0.3 (2009-12-10)
-        ++++++++++++++++
+        ----------------
         
         * Added HTTPS support.
         * Minor bug fixes.
@@ -777,14 +879,14 @@ Description: =======
         
         
         0.2 (2008-11-17)
-        ++++++++++++++++
+        ----------------
         
         * Added unit tests.
         * Bug fixes.
         
         
         0.1 (2008-11-16)
-        ++++++++++++++++
+        ----------------
         
         * First release.
         

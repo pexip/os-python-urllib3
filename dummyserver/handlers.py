@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import collections
+import contextlib
 import gzip
 import json
 import logging
@@ -10,11 +11,12 @@ import zlib
 
 from io import BytesIO
 from tornado.web import RequestHandler
+from tornado import httputil
+from datetime import datetime
+from datetime import timedelta
 
-try:
-    from urllib.parse import urlsplit
-except ImportError:
-    from urlparse import urlsplit
+from urllib3.packages.six.moves.http_client import responses
+from urllib3.packages.six.moves.urllib.parse import urlsplit
 
 log = logging.getLogger(__name__)
 
@@ -159,6 +161,17 @@ class TestingApp(RequestHandler):
         headers = [('Location', target)]
         return Response(status='303 See Other', headers=headers)
 
+    def multi_redirect(self, request):
+        "Performs a redirect chain based on ``redirect_codes``"
+        codes = request.params.get('redirect_codes', '200').decode('utf-8')
+        head, tail = codes.split(',', 1) if "," in codes else (codes, None)
+        status = "{0} {1}".format(head, responses[int(head)])
+        if not tail:
+            return Response("Done redirecting", status=status)
+
+        headers = [('Location', '/multi_redirect?redirect_codes=%s' % tail)]
+        return Response(status=status, headers=headers)
+
     def keepalive(self, request):
         if request.params.get('close', b'0') == b'1':
             headers = [('Connection', 'close')]
@@ -190,9 +203,8 @@ class TestingApp(RequestHandler):
         if encoding == 'gzip':
             headers = [('Content-Encoding', 'gzip')]
             file_ = BytesIO()
-            zipfile = gzip.GzipFile('', mode='w', fileobj=file_)
-            zipfile.write(data)
-            zipfile.close()
+            with contextlib.closing(gzip.GzipFile('', mode='w', fileobj=file_)) as zipfile:
+                zipfile.write(data)
             data = file_.getvalue()
         elif encoding == 'deflate':
             headers = [('Content-Encoding', 'deflate')]
@@ -246,6 +258,34 @@ class TestingApp(RequestHandler):
             data,
             headers=[('Content-Type', 'application/octet-stream')])
 
+    def status(self, request):
+        status = request.params.get("status", "200 OK")
+
+        return Response(status=status)
+
+    def retry_after(self, request):
+        if datetime.now() - self.application.last_req < timedelta(seconds=1):
+            status = request.params.get("status", "429 Too Many Requests")
+            return Response(
+                    status=status.decode('utf-8'),
+                    headers=[('Retry-After', '1')])
+
+        self.application.last_req = datetime.now()
+
+        return Response(status="200 OK")
+
+    def redirect_after(self, request):
+        "Perform a redirect to ``target``"
+        date = request.params.get('date')
+        if date:
+            retry_after = str(httputil.format_timestamp(
+                    datetime.fromtimestamp(float(date))))
+        else:
+            retry_after = '1'
+        target = request.params.get('target', '/')
+        headers = [('Location', target), ('Retry-After', retry_after)]
+        return Response(status='303 See Other', headers=headers)
+
     def shutdown(self, request):
         sys.exit()
 
@@ -286,6 +326,7 @@ def _parse_header(line):
             value = value[1:-1]
         pdict[name] = value
     return key, pdict
+
 
 # TODO: make the following conditional as soon as we know a version
 #       which does not require this fix.
