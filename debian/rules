@@ -2,19 +2,28 @@
 
 export PYBUILD_NAME=urllib3
 export PYTHONWARNINGS=d
+export PYBUILD_TEST_PYTEST=1
+export PYBUILD_TEST_ARGS=\
+	--ignore=test/appengine \
+	--ignore=test/with_dummyserver \
+	--ignore=test/test_connectionpool.py \
+	--ignore=test/test_ssl.py \
+	--ignore=test/contrib/test_pyopenssl.py \
+	--ignore=test/contrib/test_securetransport.py \
+	--ignore=test/contrib/test_socks.py \
+	-k-test_recent_date
+# Skip timing tests
+export TRAVIS=1
 
 %:
 	dh $@ --with python2,python3 --buildsystem=pybuild
 
-override_dh_auto_configure:
-	rm -f urllib3/packages/six.py
+override_dh_clean:
+	dh_clean
+	find . -type d -name .pytest_cache -exec rm -rf {} +
 
-override_dh_auto_test:
-	PYBUILD_SYSTEM=custom \
-	PYBUILD_TEST_ARGS="cd {build_dir}; {interpreter} -m nose {dir}/test --with-coverage -e with_dummyserver -e socks --ignore-files=\"test_gae_manager\.py\"" dh_auto_test
-	# Clean here .coverage because it is created by nose using the coverage
-	# plugin
-	find . -name .coverage -delete
+override_dh_auto_configure:
+	rm -f src/urllib3/packages/six.py
 
 override_dh_installchangelogs:
 	dh_installchangelogs CHANGES.rst

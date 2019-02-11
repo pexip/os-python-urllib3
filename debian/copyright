@@ -1,26 +1,30 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: urllib3
 Upstream-Contact: Andrey Petrov <andrey.petrov@shazow.net>
-Source: http://pypi.python.org/pypi/urllib3
+Source: https://pypi.org/project/urllib3/
 
 Files: *
-Copyright: 2008-2016, Andrey Petrov
+Copyright: 2008-2016, Andrey Petrov and contributors
 License: Expat
 
-Files: urllib3/packages/six.py
-Copyright: 2010-2011, Benjamin Peterson
+Files: src/urllib3/contrib/_securetransport/*
+Copyright: 2015-2016, Will Bond <will@wbond.net>
 License: Expat
 
-Files: urllib3/packages/ordered_dict.py
-Copyright: 2009, Raymond Hettinger
+Files: src/urllib3/packages/backports/makefile.py
+Copyright: 2007, Python Software Foundation
+License: PSF-2
+
+Files: src/urllib3/packages/six.py
+Copyright: 2010-2015, Benjamin Peterson
 License: Expat
 
-Files: urllib3/packages/ssl_match_hostname/__init__.py
+Files: src/urllib3/packages/ssl_match_hostname/__init__.py
 Copyright: 2011, Python Software Foundation
 License: PSF-2
 
 Files: debian/*
-Copyright: 2012-2016, Daniele Tricoli <eriol@mornie.org>
+Copyright: 2012-2019, Daniele Tricoli <eriol@debian.org>
 License: Expat
 
 License: Expat

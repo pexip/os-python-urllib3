@@ -1,3 +1,99 @@
+python-urllib3 (1.24.1-1) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Daniele Tricoli <eriol@debian.org>  Mon, 11 Feb 2019 02:14:53 +0100
+
+python-urllib3 (1.24.1-1~exp1) experimental; urgency=medium
+
+  * New upstream release.
+  * Refresh 01_do-not-use-embedded-python-six.patch.
+  * debian/control
+    - Update to use my debian.org mail address.
+    - Bump Standards-Version to 4.3.0 (no changes needed).
+  * debian/copyright
+    - Update to use my debian.org mail address.
+    - Update copyright years.
+
+ -- Daniele Tricoli <eriol@debian.org>  Thu, 10 Jan 2019 01:16:27 +0100
+
+python-urllib3 (1.24-1) unstable; urgency=medium
+
+  * Upload to unstable. (Closes: #911716)
+
+ -- Daniele Tricoli <eriol@mornie.org>  Thu, 25 Oct 2018 05:01:14 +0200
+
+python-urllib3 (1.24-1~exp1) experimental; urgency=medium
+
+  [ Ondřej Nový ]
+  * d/control: Set Vcs-* to salsa.debian.org
+  * d/copyright: Use https protocol in Format field
+  * d/control: Remove ancient X-Python-Version field
+  * d/control: Remove ancient X-Python3-Version field
+  * Convert git repository from git-dpm to gbp layout
+
+  [ Daniele Tricoli ]
+  * New upstream release.
+  * Refresh patches after git-dpm to gbp pq conversion.
+  * Add debian/gbp.conf.
+  * Refresh patches.
+  * debian/clean
+    - Update path of urllib3.egg-info.
+  * debian/control
+    - Require newer dh-python which cleans .pytest_cache directory.
+  * debian/copyright
+    - Update copyright years.
+    - Update Source field to point to new pypi HTTPS URL.
+    - Add section for urllib3/contrib/_securetransport.
+    - Update paths and remove section about ordered_dict.py.
+    - Add section about backported socket.makefile().
+  * debian/patches/01_do-not-use-embedded-python-six.patch
+    - Refresh and also patch urllib3.contrib.pyopenssl to use the packaged
+      version of six. (Closes: #905479)
+  * debian/patches/04_relax_nosetests_options.patch
+    - Drop since no more used (tests use pytest).
+  * debian/rules
+    - Ignore tests that require dummyserver or network access.
+    - Clean .pytest_cache/ to build twice in a row.
+  * debian/upstream/signing-key.asc
+    - Remove since upstream will not sign tarballs anymore.
+  * debian/watch
+    - Remove pgpsigurlmangle since upstream will not sign tarballs anymore.
+
+ -- Daniele Tricoli <eriol@mornie.org>  Fri, 19 Oct 2018 08:42:27 +0200
+
+python-urllib3 (1.22-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream release (Closes: #876334)
+  * d/watch
+    - Check upstream signature
+    - Use https
+  * Bump debhelper compat level to 11
+  * Standards-Version is 4.1.3 now (no changes needed)
+  * Add python{3,}-pytest to B-D
+  * Use pytest for unit tests (same as upstream) and skip timing tests
+  * Skip test_recent_date test
+  * Use autopkgtest-pkg-python testsuite instead of hardcoded one
+
+ -- Ondřej Nový <onovy@debian.org>  Thu, 04 Jan 2018 15:09:14 +0100
+
+python-urllib3 (1.21.1-1) unstable; urgency=medium
+
+  * New upstream release. (Closes: #861642)
+  * debian/control
+    - Add python-psutil{,3} to Build-Depends.
+    - Add version constraint for six. (Closes: #857006)
+    - Bump Standards-Version to 4.0.0 (no changes needed).
+  * debian/copyright
+    - Update copyright years.
+  * debian/patches/01_do-not-use-embedded-python-six.patch
+    - Refresh.
+  * debian/tests/control
+    - Add autodep8 tests. (Closes: #796717)
+
+ -- Daniele Tricoli <eriol@mornie.org>  Fri, 14 Jul 2017 01:21:44 +0200
+
 python-urllib3 (1.19.1-1) unstable; urgency=medium
 
   * New upstream release.
@@ -224,7 +320,7 @@ python-urllib3 (1.8.2-1) unstable; urgency=medium
 python-urllib3 (1.8-2) unstable; urgency=medium
 
   * Team upload.
-  * d/control: 
+  * d/control:
     - Fix python-urllib3-whl Depends.
     - Fix typo in python-urllib3-whl description.
 
