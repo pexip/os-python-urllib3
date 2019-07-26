@@ -1,3 +1,9 @@
+python-urllib3 (1.19.1-1pexip2) pexip; urgency=medium
+
+  * Python 3
+
+ -- Carl Chipperfield <carl@pexip.com>  Fri, 26 Jul 2019 13:46:41 +0000
+
 python-urllib3 (1.19.1-1pexip1) pexip; urgency=low
 
   * New upstream release
