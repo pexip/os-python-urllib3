@@ -27,7 +27,7 @@ X-Python3-Version: >= 3.2
 Homepage: http://urllib3.readthedocs.org
 Vcs-Git: https://anonscm.debian.org/git/python-modules/packages/python-urllib3.git
 Vcs-Browser: https://anonscm.debian.org/cgit/python-modules/packages/python-urllib3.git
-XS-Pexip-Upstream: http://ftp.debian.org/debian/ stretch
+XS-Pexip-Upstream: http://ftp.debian.org/debian/ buster
 
 Package: python-urllib3
 Architecture: all
