@@ -77,13 +77,8 @@ class TestWithoutSSL(unittest.TestCase):
 
 class TestImportWithoutSSL(TestWithoutSSL):
     def test_cannot_import_ssl(self):
-        # python26 has neither contextmanagers (for assertRaises) nor
-        # importlib.
-        # 'import' inside 'lambda' is invalid syntax.
-        def import_ssl():
-            import ssl
-
-        self.assertRaises(ImportError, import_ssl)
+        with self.assertRaises(ImportError):
+            import ssl  # noqa: F401
 
     def test_import_urllib3(self):
-        import urllib3
+        import urllib3  # noqa: F401
