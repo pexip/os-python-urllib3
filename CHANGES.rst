@@ -1,10 +1,174 @@
 Changes
 =======
 
+1.24.1 (2018-11-02)
+-------------------
+
+* Remove quadratic behavior within ``GzipDecoder.decompress()`` (Issue #1467)
+
+* Restored functionality of `ciphers` parameter for `create_urllib3_context()`. (Issue #1462)
+
+
+1.24 (2018-10-16)
+-----------------
+
+* Allow key_server_hostname to be specified when initializing a PoolManager to allow custom SNI to be overridden. (Pull #1449)
+
+* Test against Python 3.7 on AppVeyor. (Pull #1453)
+
+* Early-out ipv6 checks when running on App Engine. (Pull #1450)
+
+* Change ambiguous description of backoff_factor (Pull #1436)
+
+* Add ability to handle multiple Content-Encodings (Issue #1441 and Pull #1442)
+
+* Skip DNS names that can't be idna-decoded when using pyOpenSSL (Issue #1405).
+
+* Add a server_hostname parameter to HTTPSConnection which allows for
+  overriding the SNI hostname sent in the handshake. (Pull #1397)
+
+* Drop support for EOL Python 2.6 (Pull #1429 and Pull #1430)
+
+* Fixed bug where responses with header Content-Type: message/* erroneously
+  raised HeaderParsingError, resulting in a warning being logged. (Pull #1439)
+
+* Move urllib3 to src/urllib3 (Pull #1409)
+
+
+1.23 (2018-06-04)
+-----------------
+
+* Allow providing a list of headers to strip from requests when redirecting
+  to a different host. Defaults to the ``Authorization`` header. Different
+  headers can be set via ``Retry.remove_headers_on_redirect``. (Issue #1316)
+
+* Fix ``util.selectors._fileobj_to_fd`` to accept ``long`` (Issue #1247).
+
+* Dropped Python 3.3 support. (Pull #1242)
+
+* Put the connection back in the pool when calling stream() or read_chunked() on
+  a chunked HEAD response. (Issue #1234)
+
+* Fixed pyOpenSSL-specific ssl client authentication issue when clients
+  attempted to auth via certificate + chain (Issue #1060)
+
+* Add the port to the connectionpool connect print (Pull #1251)
+
+* Don't use the ``uuid`` module to create multipart data boundaries. (Pull #1380)
+
+* ``read_chunked()`` on a closed response returns no chunks. (Issue #1088)
+
+* Add Python 2.6 support to ``contrib.securetransport`` (Pull #1359)
+
+* Added support for auth info in url for SOCKS proxy (Pull #1363)
+
+
+1.22 (2017-07-20)
+-----------------
+
+* Fixed missing brackets in ``HTTP CONNECT`` when connecting to IPv6 address via
+  IPv6 proxy. (Issue #1222)
+
+* Made the connection pool retry on ``SSLError``.  The original ``SSLError``
+  is available on ``MaxRetryError.reason``. (Issue #1112)
+
+* Drain and release connection before recursing on retry/redirect.  Fixes
+  deadlocks with a blocking connectionpool. (Issue #1167)
+
+* Fixed compatibility for cookiejar. (Issue #1229)
+
+* pyopenssl: Use vendored version of ``six``. (Issue #1231)
+
+
+1.21.1 (2017-05-02)
+-------------------
+
+* Fixed SecureTransport issue that would cause long delays in response body
+  delivery. (Pull #1154)
+
+* Fixed regression in 1.21 that threw exceptions when users passed the
+  ``socket_options`` flag to the ``PoolManager``.  (Issue #1165)
+
+* Fixed regression in 1.21 that threw exceptions when users passed the
+  ``assert_hostname`` or ``assert_fingerprint`` flag to the ``PoolManager``.
+  (Pull #1157)
+
+
+1.21 (2017-04-25)
+-----------------
+
+* Improved performance of certain selector system calls on Python 3.5 and
+  later. (Pull #1095)
+
+* Resolved issue where the PyOpenSSL backend would not wrap SysCallError
+  exceptions appropriately when sending data. (Pull #1125)
+
+* Selectors now detects a monkey-patched select module after import for modules
+  that patch the select module like eventlet, greenlet. (Pull #1128)
+
+* Reduced memory consumption when streaming zlib-compressed responses
+  (as opposed to raw deflate streams). (Pull #1129)
+
+* Connection pools now use the entire request context when constructing the
+  pool key. (Pull #1016)
+
+* ``PoolManager.connection_from_*`` methods now accept a new keyword argument,
+  ``pool_kwargs``, which are merged with the existing ``connection_pool_kw``.
+  (Pull #1016)
+
+* Add retry counter for ``status_forcelist``. (Issue #1147)
+
+* Added ``contrib`` module for using SecureTransport on macOS:
+  ``urllib3.contrib.securetransport``.  (Pull #1122)
+
+* urllib3 now only normalizes the case of ``http://`` and ``https://`` schemes:
+  for schemes it does not recognise, it assumes they are case-sensitive and
+  leaves them unchanged.
+  (Issue #1080)
+
+
+1.20 (2017-01-19)
+-----------------
+
+* Added support for waiting for I/O using selectors other than select,
+  improving urllib3's behaviour with large numbers of concurrent connections.
+  (Pull #1001)
+
+* Updated the date for the system clock check. (Issue #1005)
+
+* ConnectionPools now correctly consider hostnames to be case-insensitive.
+  (Issue #1032)
+
+* Outdated versions of PyOpenSSL now cause the PyOpenSSL contrib module
+  to fail when it is injected, rather than at first use. (Pull #1063)
+
+* Outdated versions of cryptography now cause the PyOpenSSL contrib module
+  to fail when it is injected, rather than at first use. (Issue #1044)
+
+* Automatically attempt to rewind a file-like body object when a request is
+  retried or redirected. (Pull #1039)
+
+* Fix some bugs that occur when modules incautiously patch the queue module.
+  (Pull #1061)
+
+* Prevent retries from occurring on read timeouts for which the request method
+  was not in the method whitelist. (Issue #1059)
+
+* Changed the PyOpenSSL contrib module to lazily load idna to avoid
+  unnecessarily bloating the memory of programs that don't need it. (Pull
+  #1076)
+
+* Add support for IPv6 literals with zone identifiers. (Pull #1013)
+
+* Added support for socks5h:// and socks4a:// schemes when working with SOCKS
+  proxies, and controlled remote DNS appropriately. (Issue #1035)
+
+
 1.19.1 (2016-11-16)
 -------------------
 
 * Fixed AppEngine import that didn't function on Python 3.5. (Pull #1025)
+
 
 1.19 (2016-11-03)
 -----------------
@@ -21,7 +185,7 @@ Changes
   non-httplib underlying FPs. (Pull #990)
 
 * Empty filenames in multipart headers are now emitted as such, rather than
-  being supressed. (Issue #1015)
+  being suppressed. (Issue #1015)
 
 * Prefer user-supplied Host headers on chunked uploads. (Issue #1009)
 
@@ -382,7 +546,7 @@ Changes
 * All errors during a retry-enabled request should be wrapped in
   ``urllib3.exceptions.MaxRetryError``, including timeout-related exceptions
   which were previously exempt. Underlying error is accessible from the
-  ``.reason`` propery. (Issue #326)
+  ``.reason`` property. (Issue #326)
 
 * ``urllib3.exceptions.ConnectionError`` renamed to
   ``urllib3.exceptions.ProtocolError``. (Issue #326)
@@ -750,7 +914,7 @@ Changes
 * Refactored code to be even more decoupled, reusable, and extendable.
 * License header added to ``.py`` files.
 * Embiggened the documentation: Lots of Sphinx-friendly docstrings in the code
-  and docs in ``docs/`` and on urllib3.readthedocs.org.
+  and docs in ``docs/`` and on https://urllib3.readthedocs.io/.
 * Embettered all the things!
 * Started writing this file.
 
