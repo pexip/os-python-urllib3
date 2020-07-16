@@ -1,3 +1,9 @@
+python-urllib3 (1.24.1-1pexip2) pexip; urgency=medium
+
+  * Rebuild in buster environment
+
+ -- Steve McIntyre <steve.mcintyre@pexip.com>  Thu, 16 Jul 2020 04:09:48 +0000
+
 python-urllib3 (1.24.1-1pexip1) pexip; urgency=medium
 
   * Migrate to Buster
