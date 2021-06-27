@@ -1,3 +1,138 @@
+python-urllib3 (1.26.5-1~exp1) unstable; urgency=medium
+
+  * New upstream version 1.26.5
+    - CVE-2021-33503: Catastrophic backtracking in URL authority parser when
+      passed URL containing many @ characters. (Closes: #989848)
+  * Refresh patches.
+
+ -- Daniele Tricoli <eriol@debian.org>  Sun, 27 Jun 2021 17:02:18 +0200
+
+python-urllib3 (1.26.4-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream release.
+    - Enforces certificate validation in some cases involving HTTPS to HTTPS
+      proxies CVE-2021-28363.
+
+ -- Stefano Rivera <stefanor@debian.org>  Tue, 11 May 2021 20:30:00 -0400
+
+python-urllib3 (1.26.2-1) unstable; urgency=medium
+
+  * New upstream version 1.26.2
+  * Refresh patches.
+  * debian/control
+    - Bump debhelper compatibility level to 13.
+    - Bump Standards-Version to 4.5.1 (no changes needed).
+  * debian/copyright
+    - Update copyright years.
+  * debian/rules
+    - Ignore test_ssltransport.py.
+  * debian/watch
+    - Bump version to 4.
+
+ -- Daniele Tricoli <eriol@debian.org>  Thu, 31 Dec 2020 02:22:32 +0100
+
+python-urllib3 (1.25.11-1) unstable; urgency=medium
+
+  * Team upload.
+
+  [ Ondřej Nový ]
+  * d/control: Update Maintainer field with new Debian Python Team
+    contact address.
+  * d/control: Update Vcs-* fields with new Debian Python Team Salsa
+    layout.
+
+  [ Dmitry Shachnev ]
+  * New upstream release.
+  * Refresh patches for the new release.
+  * Skip test_respect_retry_after_header_sleep test.
+    It needs pytest-freezegun module which is not packaged in Debian yet.
+
+ -- Dmitry Shachnev <mitya57@debian.org>  Sat, 14 Nov 2020 15:40:30 +0300
+
+python-urllib3 (1.25.9-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream release
+    - Refresh patches
+
+ -- Scott Kitterman <scott@kitterman.com>  Sat, 02 May 2020 13:14:11 -0400
+
+python-urllib3 (1.25.8-2) unstable; urgency=medium
+
+  * Drop python2 support; Closes: #938244
+  * debian/control
+    - bump versioned b-d on six to >= 1.12.0 (the same version of the embedded
+      module); Closes: #950738
+
+ -- Sandro Tosi <morph@debian.org>  Wed, 01 Apr 2020 11:35:50 -0400
+
+python-urllib3 (1.25.8-1) unstable; urgency=medium
+
+  * Team upload.
+
+  [ Debian Janitor ]
+  * Use secure URI in Homepage field.
+  * Set upstream metadata fields: Bug-Database, Bug-Submit, Repository,
+    Repository-Browse.
+
+  [ Håvard Flaget Aasen ]
+  * New upstream version 1.25.8
+  * Rebase patches.
+  * Update Standards-Version to 4.5.0
+  * Remove python-nose and python3-nose from build-dependency.
+  * Add Rules-Requires-Root: no
+  * Remove test/conftest.py during build.
+
+ -- Håvard Flaget Aasen <haavard_aasen@yahoo.no>  Sat, 25 Jan 2020 15:56:27 +0100
+
+python-urllib3 (1.25.6-5) unstable; urgency=medium
+
+  * Team upload.
+  * debian/control
+    - remove psutil from b-d, nothing in urllib3 uses that module
+
+ -- Sandro Tosi <morph@debian.org>  Thu, 09 Jan 2020 20:45:05 -0500
+
+python-urllib3 (1.25.6-4) unstable; urgency=medium
+
+  * Upload to unstable (Closes: #945883)
+
+ -- Daniele Tricoli <eriol@debian.org>  Thu, 05 Dec 2019 01:11:15 +0100
+
+python-urllib3 (1.25.6-3) experimental; urgency=medium
+
+  * debian/rules
+    - Export LC_ALL=C.UTF-8 to build tests also using pbuilder.
+      Thanks to Andreas Beckmann for the report and suggestion.
+      (Closes: #945450)
+
+ -- Daniele Tricoli <eriol@debian.org>  Mon, 02 Dec 2019 23:20:06 +0100
+
+python-urllib3 (1.25.6-2) experimental; urgency=medium
+
+  * debian/control
+    - Add python{,3}-idna to B-D. (Closes: #943510)
+
+ -- Daniele Tricoli <eriol@debian.org>  Sun, 27 Oct 2019 14:28:10 +0100
+
+python-urllib3 (1.25.6-1) experimental; urgency=medium
+
+  * Team upload.
+
+  [ Ondřej Nový ]
+  * Use debhelper-compat instead of debian/compat.
+  * Bump Standards-Version to 4.4.0.
+
+  [ Drew Parsons ]
+  * New upstream release.
+    - fixes CVE-2019-11236 CRLF injection vulnerability.
+      Closes: #927172.
+  * Standards-Version: 4.4.1
+  * debhelper compatibility level 12
+
+ -- Drew Parsons <dparsons@debian.org>  Sat, 12 Oct 2019 11:50:26 +0800
+
 python-urllib3 (1.24.1-1) unstable; urgency=medium
 
   * Upload to unstable.
