@@ -4,7 +4,7 @@ Advanced Usage
 .. currentmodule:: urllib3
 
 
-Customizing pool behavior
+Customizing Pool Behavior
 -------------------------
 
 The :class:`~poolmanager.PoolManager` class automatically handles creating
@@ -48,9 +48,10 @@ This is a great way to prevent flooding a host with too many connections in
 multi-threaded applications.
 
 .. _stream:
+.. _streaming_and_io:
 
-Streaming and IO
-----------------
+Streaming and I/O
+-----------------
 
 When dealing with large responses it's often better to stream the response
 content::
@@ -72,7 +73,7 @@ Setting ``preload_content`` to ``False`` means that urllib3 will stream the
 response content. :meth:`~response.HTTPResponse.stream` lets you iterate over
 chunks of the response content.
 
-.. note:: When using ``preload_content=False``, you should call 
+.. note:: When using ``preload_content=False``, you should call
     :meth:`~response.HTTPResponse.release_conn` to release the http connection
     back to the connection pool so that it can be re-used.
 
@@ -87,7 +88,7 @@ a file-like object. This allows you to do buffering::
     b'\x88\x1f\x8b\xe5'
 
 Calls to :meth:`~response.HTTPResponse.read()` will block until more response
-data is available. 
+data is available.
 
     >>> import io
     >>> reader = io.BufferedReader(r, 8)
@@ -122,25 +123,79 @@ HTTP proxy::
 The usage of :class:`~poolmanager.ProxyManager` is the same as
 :class:`~poolmanager.PoolManager`.
 
-You can use :class:`~contrib.socks.SOCKSProxyManager` to connect to SOCKS4 or
-SOCKS5 proxies. In order to use SOCKS proxies you will need to install
-`PySocks <https://pypi.org/project/PySocks/>`_ or install urllib3 with the
-``socks`` extra::
+You can connect to a proxy using HTTP, HTTPS or SOCKS. urllib3's behavior will
+be different depending on the type of proxy you selected and the destination
+you're contacting.
 
-    pip install urllib3[socks]
+HTTP and HTTPS Proxies
+~~~~~~~~~~~~~~~~~~~~~~
+
+Both HTTP/HTTPS proxies support HTTP and HTTPS destinations. The only
+difference between them is if you need to establish a TLS connection to the
+proxy first. You can specify which proxy you need to contact by specifying the
+proper proxy scheme. (i.e ``http://`` or ``https://``)
+
+urllib3's behavior will be different depending on your proxy and destination:
+
+* HTTP proxy + HTTP destination
+   Your request will be forwarded with the `absolute URI
+   <https://tools.ietf.org/html/rfc7230#section-5.3.2>`_.
+
+* HTTP proxy + HTTPS destination
+    A TCP tunnel will be established with a `HTTP
+    CONNECT <https://tools.ietf.org/html/rfc7231#section-4.3.6>`_. Afterward a
+    TLS connection will be established with the destination and your request
+    will be sent.
+
+* HTTPS proxy + HTTP destination
+    A TLS connection will be established to the proxy and later your request
+    will be forwarded with the `absolute URI
+    <https://tools.ietf.org/html/rfc7230#section-5.3.2>`_.
+
+* HTTPS proxy + HTTPS destination
+    A TLS-in-TLS tunnel will be established.  An initial TLS connection will be
+    established to the proxy, then an `HTTP CONNECT
+    <https://tools.ietf.org/html/rfc7231#section-4.3.6>`_ will be sent to
+    establish a TCP connection to the destination and finally a second TLS
+    connection will be established to the destination. You can customize the
+    :class:`ssl.SSLContext` used for the proxy TLS connection through the
+    ``proxy_ssl_context`` argument of the :class:`~poolmanager.ProxyManager`
+    class.
+
+For HTTPS proxies we also support forwarding your requests to HTTPS destinations with
+an `absolute URI <https://tools.ietf.org/html/rfc7230#section-5.3.2>`_ if the
+``use_forwarding_for_https`` argument is set to ``True``. We strongly recommend you
+**only use this option with trusted or corporate proxies** as the proxy will have
+full visibility of your requests.
+
+SOCKS Proxies
+~~~~~~~~~~~~~
+
+
+For SOCKS, you can use :class:`~contrib.socks.SOCKSProxyManager` to connect to
+SOCKS4 or SOCKS5 proxies. In order to use SOCKS proxies you will need to
+install `PySocks <https://pypi.org/project/PySocks/>`_ or install urllib3 with
+the ``socks`` extra::
+
+     python -m pip install urllib3[socks]
 
 Once PySocks is installed, you can use
 :class:`~contrib.socks.SOCKSProxyManager`::
 
     >>> from urllib3.contrib.socks import SOCKSProxyManager
-    >>> proxy = SOCKSProxyManager('socks5://localhost:8889/')
+    >>> proxy = SOCKSProxyManager('socks5h://localhost:8889/')
     >>> proxy.request('GET', 'http://google.com/')
 
+.. note::
+      It is recommended to use ``socks5h://`` or ``socks4a://`` schemes in
+      your ``proxy_url`` to ensure that DNS resolution is done from the remote
+      server instead of client-side when connecting to a domain name.
 
 .. _ssl_custom:
+.. _custom_ssl_certificates:
 
-Custom SSL certificates and client certificates
------------------------------------------------
+Custom TLS Certificates
+-----------------------
 
 Instead of using `certifi <https://certifi.io/>`_ you can provide your
 own certificate authority bundle. This is useful for cases where you've
@@ -158,6 +213,50 @@ verified with that bundle will succeed. It's recommended to use a separate
 :class:`~poolmanager.PoolManager` to make requests to URLs that do not need
 the custom certificate.
 
+.. _sni_custom:
+
+Custom SNI Hostname
+-------------------
+
+If you want to create a connection to a host over HTTPS which uses SNI, there
+are two places where the hostname is expected. It must be included in the Host
+header sent, so that the server will know which host is being requested. The
+hostname should also match the certificate served by the server, which is
+checked by urllib3.
+
+Normally, urllib3 takes care of setting and checking these values for you when
+you connect to a host by name. However, it's sometimes useful to set a
+connection's expected Host header and certificate hostname (subject),
+especially when you are connecting without using name resolution. For example,
+you could connect to a server by IP using HTTPS like so::
+
+    >>> import urllib3
+    >>> pool = urllib3.HTTPSConnectionPool(
+    ...     "10.0.0.10",
+    ...     assert_hostname="example.org",
+    ...     server_hostname="example.org"
+    ... )
+    >>> pool.urlopen(
+    ...     "GET",
+    ...     "/",
+    ...     headers={"Host": "example.org"},
+    ...     assert_same_host=False
+    ... )
+
+
+Note that when you use a connection in this way, you must specify
+``assert_same_host=False``.
+
+This is useful when DNS resolution for ``example.org`` does not match the
+address that you would like to use. The IP may be for a private interface, or
+you may want to use a specific host under round-robin DNS.
+
+
+.. _ssl_client:
+
+Client Certificates
+-------------------
+
 You can also specify a client certificate. This is useful when both the server
 and the client need to verify each other's identity. Typically these
 certificates are issued from the same authority. To use a client certificate,
@@ -168,10 +267,22 @@ provide the full path when creating a :class:`~poolmanager.PoolManager`::
     ...     cert_reqs='CERT_REQUIRED',
     ...     ca_certs='/path/to/your/certificate_bundle')
 
-.. _ssl_mac:
+If you have an encrypted client certificate private key you can use
+the ``key_password`` parameter to specify a password to decrypt the key. ::
 
-Certificate validation and Mac OS X
------------------------------------
+    >>> http = urllib3.PoolManager(
+    ...     cert_file='/path/to/your/client_cert.pem',
+    ...     cert_reqs='CERT_REQUIRED',
+    ...     key_file='/path/to/your/client.key',
+    ...     key_password='keyfile_password')
+
+If your key isn't encrypted the ``key_password`` parameter isn't required.
+
+.. _ssl_mac:
+.. _certificate_validation_and_mac_os_x:
+
+Certificate Validation and macOS
+--------------------------------
 
 Apple-provided Python and OpenSSL libraries contain a patches that make them
 automatically check the system keychain's certificates. This can be
@@ -186,11 +297,11 @@ has more in-depth analysis and explanation.
 
 .. _ssl_warnings:
 
-SSL Warnings
+TLS Warnings
 ------------
 
 urllib3 will issue several different warnings based on the level of certificate
-verification support. These warning indicate particular situations and can
+verification support. These warnings indicate particular situations and can
 be resolved in different ways.
 
 * :class:`~exceptions.InsecureRequestWarning`
@@ -216,12 +327,16 @@ be resolved in different ways.
 .. _disable_ssl_warnings:
 
 Making unverified HTTPS requests is **strongly** discouraged, however, if you
-understand the risks and wish to disable these warnings, you can use :func:`~urllib3.disable_warnings`::
+understand the risks and wish to disable these warnings, you can use :func:`~urllib3.disable_warnings`:
+
+.. code-block:: pycon
 
     >>> import urllib3
     >>> urllib3.disable_warnings()
 
-Alternatively you can capture the warnings with the standard :mod:`logging` module::
+Alternatively you can capture the warnings with the standard :mod:`logging` module:
+
+.. code-block:: pycon
 
     >>> logging.captureWarnings(True)
 
@@ -243,17 +358,56 @@ you either have to use :mod:`urllib3.contrib.appengine`'s
 :class:`~urllib3.contrib.appengine.AppEngineManager` or use the `Sockets API
 <https://cloud.google.com/appengine/docs/python/sockets/>`_
 
-To use :class:`~urllib3.contrib.appengine.AppEngineManager`::
+To use :class:`~urllib3.contrib.appengine.AppEngineManager`:
+
+.. code-block:: pycon
 
     >>> from urllib3.contrib.appengine import AppEngineManager
     >>> http = AppEngineManager()
     >>> http.request('GET', 'https://google.com/')
 
 To use the Sockets API, add the following to your app.yaml and use
-:class:`~urllib3.poolmanager.PoolManager` as usual::
+:class:`~urllib3.poolmanager.PoolManager` as usual:
+
+.. code-block:: yaml
 
     env_variables:
         GAE_USE_SOCKETS_HTTPLIB : 'true'
 
 For more details on the limitations and gotchas, see
 :mod:`urllib3.contrib.appengine`.
+
+Brotli Encoding
+---------------
+
+Brotli is a compression algorithm created by Google with better compression
+than gzip and deflate and is supported by urllib3 if the
+`brotlipy <https://github.com/python-hyper/brotlipy>`_ package is installed.
+You may also request the package be installed via the ``urllib3[brotli]`` extra:
+
+.. code-block:: bash
+
+    $ python -m pip install urllib3[brotli]
+
+Here's an example using brotli encoding via the ``Accept-Encoding`` header:
+
+.. code-block:: pycon
+
+    >>> from urllib3 import PoolManager
+    >>> http = PoolManager()
+    >>> http.request('GET', 'https://www.google.com/', headers={'Accept-Encoding': 'br'})
+
+Decrypting Captured TLS Sessions with Wireshark
+-----------------------------------------------
+Python 3.8 and higher support logging of TLS pre-master secrets.
+With these secrets tools like `Wireshark <https://wireshark.org>`_ can decrypt captured
+network traffic.
+
+To enable this simply define environment variable `SSLKEYLOGFILE`:
+
+.. code-block:: bash
+
+    export SSLKEYLOGFILE=/path/to/keylogfile.txt
+
+Then configure the key logfile in `Wireshark <https://wireshark.org>`_, see
+`Wireshark TLS Decryption <https://wiki.wireshark.org/TLS#TLS_Decryption>`_ for instructions.

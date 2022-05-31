@@ -1,23 +1,26 @@
 import signal
 import socket
 import threading
+
 try:
     from time import monotonic
 except ImportError:
     from time import time as monotonic
+
 import time
 
 import pytest
 
-from .socketpair_helper import socketpair
 from urllib3.util.wait import (
-    wait_for_read,
-    wait_for_write,
-    wait_for_socket,
-    select_wait_for_socket,
-    poll_wait_for_socket,
     _have_working_poll,
+    poll_wait_for_socket,
+    select_wait_for_socket,
+    wait_for_read,
+    wait_for_socket,
+    wait_for_write,
 )
+
+from .socketpair_helper import socketpair
 
 
 @pytest.fixture
@@ -28,10 +31,7 @@ def spair():
     b.close()
 
 
-variants = [
-    wait_for_socket,
-    select_wait_for_socket,
-]
+variants = [wait_for_socket, select_wait_for_socket]
 if _have_working_poll():
     variants.append(poll_wait_for_socket)
 
@@ -103,10 +103,7 @@ def test_wait_for_read_write(spair):
     assert not wait_for_write(a, 0)
 
 
-@pytest.mark.skipif(
-    not hasattr(signal, "setitimer"),
-    reason="need setitimer() support"
-)
+@pytest.mark.skipif(not hasattr(signal, "setitimer"), reason="need setitimer() support")
 @pytest.mark.parametrize("wfs", variants)
 def test_eintr(wfs, spair):
     a, b = spair
@@ -137,10 +134,7 @@ def test_eintr(wfs, spair):
     assert interrupt_count[0] > 0
 
 
-@pytest.mark.skipif(
-    not hasattr(signal, "setitimer"),
-    reason="need setitimer() support"
-)
+@pytest.mark.skipif(not hasattr(signal, "setitimer"), reason="need setitimer() support")
 @pytest.mark.parametrize("wfs", variants)
 def test_eintr_zero_timeout(wfs, spair):
     a, b = spair
@@ -171,10 +165,7 @@ def test_eintr_zero_timeout(wfs, spair):
     assert interrupt_count[0] > 0
 
 
-@pytest.mark.skipif(
-    not hasattr(signal, "setitimer"),
-    reason="need setitimer() support"
-)
+@pytest.mark.skipif(not hasattr(signal, "setitimer"), reason="need setitimer() support")
 @pytest.mark.parametrize("wfs", variants)
 def test_eintr_infinite_timeout(wfs, spair):
     a, b = spair
