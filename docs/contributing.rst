@@ -13,6 +13,8 @@ If you wish to add a new feature or fix a bug:
    to start making your changes.
 #. Write a test which shows that the bug was fixed or that the feature works
    as expected.
+#. Format your changes with black using command `$ nox -rs format` and lint your
+   changes using command `nox -rs lint`.
 #. Send a pull request and bug the maintainer until it gets merged and published.
    :) Make sure to add yourself to ``CONTRIBUTORS.txt``.
 
@@ -20,86 +22,98 @@ If you wish to add a new feature or fix a bug:
 Setting up your development environment
 ---------------------------------------
 
-It is recommended, and even enforced by the make file, that you use a 
-`virtualenv
-<http://docs.python-guide.org/en/latest/dev/virtualenvs/>`_::
+In order to setup the development environment all that you need is
+`nox <https://nox.thea.codes/en/stable/index.html>`_ installed in your machine::
 
-  $ python3 -m venv venv3
-  $ source venv3/bin/activate
-  $ pip install -r dev-requirements.txt
+  $ pip install --user --upgrade nox
 
 
 Running the tests
 -----------------
 
 We use some external dependencies, multiple interpreters and code coverage
-analysis while running test suite. Our ``Makefile`` handles much of this for
-you as long as you're running it `inside of a virtualenv
-<http://docs.python-guide.org/en/latest/dev/virtualenvs/>`_::
+analysis while running test suite. Our ``noxfile.py`` handles much of this for
+you::
 
-  $ make test-quick
-  [... magically installs dependencies and runs tests on your virtualenv]
-  Ran 182 tests in 1.633s
+  $ nox --reuse-existing-virtualenvs --sessions test-2.7 test-3.7
+  [ Nox will create virtualenv if needed, install the specified dependencies, and run the commands in order.]
+  nox > Running session test-2.7
+  .......
+  .......
+  nox > Session test-2.7 was successful.
+  .......
+  .......
+  nox > Running session test-3.7
+  .......
+  .......
+  nox > Session test-3.7 was successful.
 
-  OK (SKIP=6)
+There is also a nox command for running all of our tests and multiple python
+versions.::
 
-There is also a make target for running all of our tests and multiple python
-versions.
-
-  $ make test-all
+  $ nox --reuse-existing-virtualenvs --sessions test
 
 Note that code coverage less than 100% is regarded as a failing run. Some
 platform-specific tests are skipped unless run in that platform.  To make sure
 the code works in all of urllib3's supported platforms, you can run our ``tox``
 suite::
 
-  $ make test-all
-  [... tox creates a virtualenv for every platform and runs tests inside of each]
-  py27: commands succeeded
-  py34: commands succeeded
-  py35: commands succeeded
-  py36: commands succeeded
-  py37: commands succeeded
-  pypy: commands succeeded
+  $ nox --reuse-existing-virtualenvs --sessions test
+  [ Nox will create virtualenv if needed, install the specified dependencies, and run the commands in order.]
+  .......
+  .......
+  nox > Session test-2.7 was successful.
+  nox > Session test-3.4 was successful.
+  nox > Session test-3.5 was successful.
+  nox > Session test-3.6 was successful.
+  nox > Session test-3.7 was successful.
+  nox > Session test-3.8 was successful.
+  nox > Session test-pypy was successful.
 
 Our test suite `runs continuously on Travis CI
 <https://travis-ci.org/urllib3/urllib3>`_ with every pull request.
 
+To run specific tests or quickly re-run without nox recreating the env, do the following::
 
-Sponsorship
------------
+  $ nox --reuse-existing-virtualenvs --sessions test-3.8 -- pyTestArgument1 pyTestArgument2 pyTestArgumentN
+  [ Nox will create virtualenv, install the specified dependencies, and run the commands in order.]
+  nox > Running session test-3.8
+  nox > Re-using existing virtual environment at .nox/test-3-8.
+  .......
+  .......
+  nox > Session test-3.8 was successful.
 
-Please consider sponsoring urllib3 development, especially if your company
-benefits from this library.
+After the ``--`` indicator, any arguments will be passed to pytest.
+To specify an exact test case the following syntax also works:
+``test/dir/module_name.py::TestClassName::test_method_name``
+(eg.: ``test/with_dummyserver/test_https.py::TestHTTPS::test_simple``).
+The following argument is another valid example to pass to pytest: ``-k test_methode_name``.
+These are useful when developing new test cases and there is no point
+re-running the entire test suite every iteration. It is also possible to
+further parameterize pytest for local testing.
 
-We welcome your patronage on `Bountysource <https://www.bountysource.com/teams/urllib3>`_:
+For all valid arguments, check `the pytest documentation
+<https://docs.pytest.org/en/stable/usage.html#stopping-after-the-first-or-n-failures>`_.
 
-* `Contribute a recurring amount to the team <https://salt.bountysource.com/checkout/amount?team=urllib3>`_
-* `Place a bounty on a specific feature <https://www.bountysource.com/teams/urllib3>`_
+Releases
+--------
 
-Your contribution will go towards adding new features to urllib3 and making
-sure all functionality continues to meet our high quality standards.
+A release candidate can be created by any contributor by creating a branch
+named ``release-x.x`` where ``x.x`` is the version of the proposed release.
 
-We also welcome sponsorship in the form of time. We greatly appreciate companies
-who encourage employees to contribute on an ongoing basis during their work hours.
-Please let us know and we'll be glad to add you to our sponsors list!
+- Update ``CHANGES.rst`` and ``urllib3/__init__.py`` with the proper version number
+  and commit the changes to ``release-x.x``.
+- Open a pull request to merge the ``release-x.x`` branch into the ``master`` branch.
+- Integration tests are run against the release candidate on Travis. From here on all
+  the steps below will be handled by a maintainer so unless you receive review comments
+  you are done here.
+- Once the pull request is squash merged into master the merging maintainer
+  will tag the merge commit with the version number:
 
+  - ``git tag -a 1.24.1 [commit sha]``
+  - ``git push origin master --tags``
 
-Project Grant
--------------
-
-A grant for contiguous full-time development has the biggest impact for
-progress. Periods of 3 to 10 days allow a contributor to tackle substantial
-complex issues which are otherwise left to linger until somebody can't afford
-to not fix them.
-
-Contact `@shazow <https://github.com/shazow>`_ to arrange a grant for a core
-contributor.
-
-Huge thanks to all the companies and individuals who financially contributed to
-the development of urllib3. Please send a PR if you've donated and would like
-to be listed.
-
-* `Stripe <https://stripe.com/>`_ (June 23, 2014)
-
-.. * [Company] ([date])
+- After the commit is tagged Travis will build the tagged commit and upload the sdist and wheel
+  to PyPI and create a draft release on GitHub for the tag. The merging maintainer will
+  ensure that the PyPI sdist and wheel are properly uploaded.
+- The merging maintainer will mark the draft release on GitHub as an approved release.
