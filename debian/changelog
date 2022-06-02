@@ -1,3 +1,9 @@
+python-urllib3 (1.26.5-1~exp1pexip1) pexip; urgency=medium
+
+  * Initial bullseye build
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Thu, 02 Jun 2022 14:42:52 +0100
+
 python-urllib3 (1.26.5-1~exp1) unstable; urgency=medium
 
   * New upstream version 1.26.5
