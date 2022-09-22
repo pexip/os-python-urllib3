@@ -19,12 +19,8 @@ Files: src/urllib3/packages/six.py
 Copyright: 2010-2015, Benjamin Peterson
 License: Expat
 
-Files: src/urllib3/packages/ssl_match_hostname/__init__.py
-Copyright: 2011, Python Software Foundation
-License: PSF-2
-
 Files: debian/*
-Copyright: 2012-2020, Daniele Tricoli <eriol@debian.org>
+Copyright: 2012-2022, Daniele Tricoli <eriol@debian.org>
 License: Expat
 
 License: Expat

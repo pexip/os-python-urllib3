@@ -1,5 +1,4 @@
 CHANGES.rst
-CONTRIBUTORS.txt
 LICENSE.txt
 MANIFEST.in
 README.rst
@@ -16,7 +15,8 @@ docs/requirements.txt
 docs/sponsors.rst
 docs/user-guide.rst
 docs/v2-roadmap.rst
-docs/images/banner.svg
+docs/_static/banner.svg
+docs/_static/dark-logo.svg
 docs/images/demo-button.png
 docs/images/favicon.png
 docs/images/learn-more-button.png
@@ -77,8 +77,6 @@ src/urllib3/packages/__init__.py
 src/urllib3/packages/six.py
 src/urllib3/packages/backports/__init__.py
 src/urllib3/packages/backports/makefile.py
-src/urllib3/packages/ssl_match_hostname/__init__.py
-src/urllib3/packages/ssl_match_hostname/_implementation.py
 src/urllib3/util/__init__.py
 src/urllib3/util/connection.py
 src/urllib3/util/proxy.py
@@ -87,6 +85,7 @@ src/urllib3/util/request.py
 src/urllib3/util/response.py
 src/urllib3/util/retry.py
 src/urllib3/util/ssl_.py
+src/urllib3/util/ssl_match_hostname.py
 src/urllib3/util/ssltransport.py
 src/urllib3/util/timeout.py
 src/urllib3/util/url.py

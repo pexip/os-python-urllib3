@@ -9,7 +9,7 @@ Patch-Name: 01_do-not-use-embedded-python-six.patch
  dummyserver/handlers.py                          | 6 +++---
  src/urllib3/_collections.py                      | 4 ++--
  src/urllib3/connection.py                        | 6 +++---
- src/urllib3/connectionpool.py                    | 4 ++--
+ src/urllib3/connectionpool.py                    | 5 +++--
  src/urllib3/contrib/_securetransport/bindings.py | 2 +-
  src/urllib3/contrib/appengine.py                 | 2 +-
  src/urllib3/contrib/ntlmpool.py                  | 2 +-
@@ -20,7 +20,7 @@ Patch-Name: 01_do-not-use-embedded-python-six.patch
  src/urllib3/poolmanager.py                       | 4 ++--
  src/urllib3/request.py                           | 2 +-
  src/urllib3/response.py                          | 2 +-
- src/urllib3/util/connection.py                   | 2 +-
+ src/urllib3/util/connection.py                   | 5 +++--
  src/urllib3/util/queue.py                        | 4 ++--
  src/urllib3/util/request.py                      | 2 +-
  src/urllib3/util/response.py                     | 2 +-
@@ -30,7 +30,7 @@ Patch-Name: 01_do-not-use-embedded-python-six.patch
  test/__init__.py                                 | 2 +-
  test/test_collections.py                         | 2 +-
  test/test_compatibility.py                       | 2 +-
- test/test_connectionpool.py                      | 6 +++---
+ test/test_connectionpool.py                      | 7 ++++---
  test/test_fields.py                              | 2 +-
  test/test_filepost.py                            | 2 +-
  test/test_queue_monkeypatch.py                   | 2 +-
@@ -41,7 +41,7 @@ Patch-Name: 01_do-not-use-embedded-python-six.patch
  test/with_dummyserver/test_connectionpool.py     | 4 ++--
  test/with_dummyserver/test_https.py              | 2 +-
  test/with_dummyserver/test_socketlevel.py        | 2 +-
- 35 files changed, 49 insertions(+), 49 deletions(-)
+ 35 files changed, 53 insertions(+), 50 deletions(-)
 
 diff --git a/dummyserver/handlers.py b/dummyserver/handlers.py
 index c90c2fc..f8bdf25 100644
@@ -76,7 +76,7 @@ index da9857e..527c1fe 100644
  __all__ = ["RecentlyUsedContainer", "HTTPHeaderDict"]
  
 diff --git a/src/urllib3/connection.py b/src/urllib3/connection.py
-index efa19af..638a8aa 100644
+index 10fb36c..cbb9b89 100644
 --- a/src/urllib3/connection.py
 +++ b/src/urllib3/connection.py
 @@ -9,9 +9,9 @@ import warnings
@@ -93,35 +93,43 @@ index efa19af..638a8aa 100644
  
  try:  # Compiled with SSL?
 diff --git a/src/urllib3/connectionpool.py b/src/urllib3/connectionpool.py
-index 4018321..a9c0908 100644
+index 96339e9..1f4ed7d 100644
 --- a/src/urllib3/connectionpool.py
 +++ b/src/urllib3/connectionpool.py
-@@ -33,8 +33,8 @@ from .exceptions import (
+@@ -9,6 +9,9 @@ import warnings
+ from socket import error as SocketError
+ from socket import timeout as SocketTimeout
+ 
++import six
++from six.moves import queue
++
+ from .connection import (
+     BaseSSLError,
+     BrokenPipeError,
+@@ -34,8 +37,6 @@ from .exceptions import (
      SSLError,
      TimeoutError,
  )
 -from .packages import six
 -from .packages.six.moves import queue
-+import six
-+from six.moves import queue
- from .packages.ssl_match_hostname import CertificateError
  from .request import RequestMethods
  from .response import HTTPResponse
+ from .util.connection import is_connection_dropped
 diff --git a/src/urllib3/contrib/_securetransport/bindings.py b/src/urllib3/contrib/_securetransport/bindings.py
-index 11524d4..3619b16 100644
+index 264d564..3619b16 100644
 --- a/src/urllib3/contrib/_securetransport/bindings.py
 +++ b/src/urllib3/contrib/_securetransport/bindings.py
 @@ -48,7 +48,7 @@ from ctypes import (
  )
  from ctypes.util import find_library
  
--from urllib3.packages.six import raise_from
+-from ...packages.six import raise_from
 +from six import raise_from
  
  if platform.system() != "Darwin":
      raise ImportError("Only macOS is supported")
 diff --git a/src/urllib3/contrib/appengine.py b/src/urllib3/contrib/appengine.py
-index aa64a09..29c6850 100644
+index f91bdd6..9c73320 100644
 --- a/src/urllib3/contrib/appengine.py
 +++ b/src/urllib3/contrib/appengine.py
 @@ -52,7 +52,7 @@ from ..exceptions import (
@@ -134,31 +142,31 @@ index aa64a09..29c6850 100644
  from ..response import HTTPResponse
  from ..util.retry import Retry
 diff --git a/src/urllib3/contrib/ntlmpool.py b/src/urllib3/contrib/ntlmpool.py
-index b2df45d..21f629d 100644
+index 41a8fd1..34adc9e 100644
 --- a/src/urllib3/contrib/ntlmpool.py
 +++ b/src/urllib3/contrib/ntlmpool.py
-@@ -10,7 +10,7 @@ from logging import getLogger
+@@ -11,7 +11,7 @@ from logging import getLogger
  from ntlm import ntlm
  
  from .. import HTTPSConnectionPool
 -from ..packages.six.moves.http_client import HTTPSConnection
 +from six.moves.http_client import HTTPSConnection
  
- log = getLogger(__name__)
- 
+ warnings.warn(
+     "The 'urllib3.contrib.ntlmpool' module is deprecated and will be removed "
 diff --git a/src/urllib3/contrib/pyopenssl.py b/src/urllib3/contrib/pyopenssl.py
-index def83af..e081163 100644
+index 50a07d5..0f3e555 100644
 --- a/src/urllib3/contrib/pyopenssl.py
 +++ b/src/urllib3/contrib/pyopenssl.py
-@@ -75,7 +75,7 @@ import ssl
- import sys
+@@ -76,7 +76,7 @@ import sys
+ import warnings
  
  from .. import util
 -from ..packages import six
 +import six
  from ..util.ssl_ import PROTOCOL_TLS_CLIENT
  
- __all__ = ["inject_into_urllib3", "extract_from_urllib3"]
+ warnings.warn(
 diff --git a/src/urllib3/exceptions.py b/src/urllib3/exceptions.py
 index cba6f3f..053758e 100644
 --- a/src/urllib3/exceptions.py
@@ -200,7 +208,7 @@ index 36c9252..cc2ecdb 100644
  writer = codecs.lookup("utf-8")[3]
  
 diff --git a/src/urllib3/poolmanager.py b/src/urllib3/poolmanager.py
-index 3a31a28..9639153 100644
+index ca4ec34..ca305ec 100644
 --- a/src/urllib3/poolmanager.py
 +++ b/src/urllib3/poolmanager.py
 @@ -13,8 +13,8 @@ from .exceptions import (
@@ -228,10 +236,10 @@ index 398386a..6f5c0a5 100644
  __all__ = ["RequestMethods"]
  
 diff --git a/src/urllib3/response.py b/src/urllib3/response.py
-index 38693f4..aeea341 100644
+index 01f08ee..4fcf8a0 100644
 --- a/src/urllib3/response.py
 +++ b/src/urllib3/response.py
-@@ -26,7 +26,7 @@ from .exceptions import (
+@@ -31,7 +31,7 @@ from .exceptions import (
      ResponseNotChunked,
      SSLError,
  )
@@ -241,18 +249,30 @@ index 38693f4..aeea341 100644
  
  log = logging.getLogger(__name__)
 diff --git a/src/urllib3/util/connection.py b/src/urllib3/util/connection.py
-index bdc240c..c0d69c8 100644
+index 6af1138..953266f 100644
 --- a/src/urllib3/util/connection.py
 +++ b/src/urllib3/util/connection.py
-@@ -5,7 +5,7 @@ import socket
- from urllib3.exceptions import LocationParseError
+@@ -2,9 +2,10 @@ from __future__ import absolute_import
  
- from ..contrib import _appengine_environ
--from ..packages import six
+ import socket
+ 
 +import six
++
+ from ..contrib import _appengine_environ
+ from ..exceptions import LocationParseError
+-from ..packages import six
  from .wait import NoWayToWaitForSocketError, wait_for_read
  
  
+@@ -66,7 +67,7 @@ def create_connection(
+         host.encode("idna")
+     except UnicodeError:
+         return six.raise_from(
+-            LocationParseError(u"'%s', label empty or too long" % host), None
++            LocationParseError("'%s', label empty or too long" % host), None
+         )
+ 
+     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
 diff --git a/src/urllib3/util/queue.py b/src/urllib3/util/queue.py
 index 4178410..7f214cb 100644
 --- a/src/urllib3/util/queue.py
@@ -268,7 +288,7 @@ index 4178410..7f214cb 100644
  if six.PY2:
      # Queue is imported for side effects on MS Windows. See issue #229.
 diff --git a/src/urllib3/util/request.py b/src/urllib3/util/request.py
-index 2510338..e1913ec 100644
+index b574b08..7427875 100644
 --- a/src/urllib3/util/request.py
 +++ b/src/urllib3/util/request.py
 @@ -3,7 +3,7 @@ from __future__ import absolute_import
@@ -294,7 +314,7 @@ index 5ea609c..bd6ecd7 100644
  
  def is_fp_closed(obj):
 diff --git a/src/urllib3/util/retry.py b/src/urllib3/util/retry.py
-index 180e82b..998ae23 100644
+index 3398323..4473a8e 100644
 --- a/src/urllib3/util/retry.py
 +++ b/src/urllib3/util/retry.py
 @@ -17,7 +17,7 @@ from ..exceptions import (
@@ -307,7 +327,7 @@ index 180e82b..998ae23 100644
  log = logging.getLogger(__name__)
  
 diff --git a/src/urllib3/util/ssl_.py b/src/urllib3/util/ssl_.py
-index 134ec10..12720f9 100644
+index 8f86781..11183c4 100644
 --- a/src/urllib3/util/ssl_.py
 +++ b/src/urllib3/util/ssl_.py
 @@ -13,7 +13,7 @@ from ..exceptions import (
@@ -320,7 +340,7 @@ index 134ec10..12720f9 100644
  
  SSLContext = None
 diff --git a/src/urllib3/util/url.py b/src/urllib3/util/url.py
-index 81a03da..6fd2b2d 100644
+index b667c16..515d6fc 100644
 --- a/src/urllib3/util/url.py
 +++ b/src/urllib3/util/url.py
 @@ -4,7 +4,7 @@ import re
@@ -333,10 +353,10 @@ index 81a03da..6fd2b2d 100644
  url_attrs = ["scheme", "auth", "host", "port", "path", "query", "fragment"]
  
 diff --git a/test/__init__.py b/test/__init__.py
-index 3675f48..89693d2 100644
+index 2307b2d..d5cc98b 100644
 --- a/test/__init__.py
 +++ b/test/__init__.py
-@@ -16,7 +16,7 @@ except ImportError:
+@@ -18,7 +18,7 @@ except ImportError:
  
  from urllib3 import util
  from urllib3.exceptions import HTTPWarning
@@ -372,21 +392,29 @@ index 58a9ab5..0c86d4d 100644
  
  
 diff --git a/test/test_connectionpool.py b/test/test_connectionpool.py
-index eec6bd2..4c6b1ce 100644
+index 872d01c..3a9fb9d 100644
 --- a/test/test_connectionpool.py
 +++ b/test/test_connectionpool.py
-@@ -26,9 +26,9 @@ from urllib3.exceptions import (
+@@ -7,6 +7,9 @@ from test import SHORT_TIMEOUT
+ 
+ import pytest
+ from mock import Mock
++from six.moves import http_client as httplib
++from six.moves.http_client import HTTPException
++from six.moves.queue import Empty
+ 
+ from dummyserver.server import DEFAULT_CA
+ from urllib3._collections import HTTPHeaderDict
+@@ -26,9 +29,7 @@ from urllib3.exceptions import (
      SSLError,
      TimeoutError,
  )
 -from urllib3.packages.six.moves import http_client as httplib
 -from urllib3.packages.six.moves.http_client import HTTPException
 -from urllib3.packages.six.moves.queue import Empty
-+from six.moves import http_client as httplib
-+from six.moves.http_client import HTTPException
-+from six.moves.queue import Empty
- from urllib3.packages.ssl_match_hostname import CertificateError
++from urllib3.packages.ssl_match_hostname import CertificateError
  from urllib3.response import HTTPResponse
+ from urllib3.util.ssl_match_hostname import CertificateError
  from urllib3.util.timeout import Timeout
 diff --git a/test/test_fields.py b/test/test_fields.py
 index 98ce17c..cde4b96 100644
@@ -441,7 +469,7 @@ index 03f2780..bffef76 100644
  from urllib3.util.response import is_fp_closed
  from urllib3.util.retry import RequestHistory, Retry
 diff --git a/test/test_retry.py b/test/test_retry.py
-index 8ff4cbd..f2698f0 100644
+index 21ba1e9..53f0935 100644
 --- a/test/test_retry.py
 +++ b/test/test_retry.py
 @@ -11,8 +11,8 @@ from urllib3.exceptions import (
@@ -456,7 +484,7 @@ index 8ff4cbd..f2698f0 100644
  from urllib3.util.retry import RequestHistory, Retry
  
 diff --git a/test/test_retry_deprecated.py b/test/test_retry_deprecated.py
-index c001e3d..9079654 100644
+index f55c5d8..4b3c9d8 100644
 --- a/test/test_retry_deprecated.py
 +++ b/test/test_retry_deprecated.py
 @@ -12,8 +12,8 @@ from urllib3.exceptions import (
@@ -471,7 +499,7 @@ index c001e3d..9079654 100644
  from urllib3.util.retry import RequestHistory, Retry
  
 diff --git a/test/test_util.py b/test/test_util.py
-index 88409e2..1dce178 100644
+index bb89464..5311633 100644
 --- a/test/test_util.py
 +++ b/test/test_util.py
 @@ -19,7 +19,7 @@ from urllib3.exceptions import (
@@ -484,10 +512,10 @@ index 88409e2..1dce178 100644
  from urllib3.util import is_fp_closed
  from urllib3.util.connection import _has_ipv6, allowed_gai_family, create_connection
 diff --git a/test/with_dummyserver/test_connectionpool.py b/test/with_dummyserver/test_connectionpool.py
-index 8ea2cce..c083616 100644
+index a4efff5..2177c24 100644
 --- a/test/with_dummyserver/test_connectionpool.py
 +++ b/test/with_dummyserver/test_connectionpool.py
-@@ -28,8 +28,8 @@ from urllib3.exceptions import (
+@@ -30,8 +30,8 @@ from urllib3.exceptions import (
      ReadTimeoutError,
      UnrewindableBodyError,
  )
@@ -499,10 +527,10 @@ index 8ea2cce..c083616 100644
  from urllib3.util.retry import RequestHistory, Retry
  from urllib3.util.timeout import Timeout
 diff --git a/test/with_dummyserver/test_https.py b/test/with_dummyserver/test_https.py
-index ed50990..f7e7a36 100644
+index f37f8e6..5ddc879 100644
 --- a/test/with_dummyserver/test_https.py
 +++ b/test/with_dummyserver/test_https.py
-@@ -42,7 +42,7 @@ from urllib3.exceptions import (
+@@ -41,7 +41,7 @@ from urllib3.exceptions import (
      SSLError,
      SystemTimeWarning,
  )
@@ -512,7 +540,7 @@ index ed50990..f7e7a36 100644
  
  from .. import has_alpn
 diff --git a/test/with_dummyserver/test_socketlevel.py b/test/with_dummyserver/test_socketlevel.py
-index 6e57d67..7bb5827 100644
+index 41f1834..54e24a4 100644
 --- a/test/with_dummyserver/test_socketlevel.py
 +++ b/test/with_dummyserver/test_socketlevel.py
 @@ -17,7 +17,7 @@ from urllib3.exceptions import (

@@ -1,0 +1,11 @@
+Tests: python3-urllib3
+Depends:
+ python3-all,
+ python3-brotli,
+ python3-coverage,
+ python3-idna,
+ python3-mock,
+ python3-pytest,
+ python3-six,
+ python3-tornado,
+ python3-urllib3,

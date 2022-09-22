@@ -1,3 +1,37 @@
+python-urllib3 (1.26.12-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream version 1.26.12
+  * Bump Standards-Version to 4.6.1 (no change)
+  * Refresh patches
+
+ -- Anthony Fok <foka@debian.org>  Thu, 22 Sep 2022 15:14:17 -0600
+
+python-urllib3 (1.26.9-1) unstable; urgency=medium
+
+  * New upstream version 1.26.9
+  * Refresh patches.
+  * Add python3-brotli to B-D, Suggests and autopkgtest's Depends.
+
+ -- Daniele Tricoli <eriol@debian.org>  Sat, 19 Mar 2022 01:35:39 +0100
+
+python-urllib3 (1.26.8-1) unstable; urgency=medium
+
+  [ Jenkins ]
+  * Remove constraints unnecessary since stretch
+
+  [ Daniele Tricoli ]
+  * New upstream release.
+  * Refresh patches.
+  * Enable salsa pipelines.
+  * Enable autopkgtest tests.
+  * debian/control
+    - Update standards version to 4.6.0, no changes needed.
+  * debian/copyright
+    - Update copyright years.
+
+ -- Daniele Tricoli <eriol@debian.org>  Mon, 14 Mar 2022 01:12:18 +0100
+
 python-urllib3 (1.26.5-1~exp1) unstable; urgency=medium
 
   * New upstream version 1.26.5
