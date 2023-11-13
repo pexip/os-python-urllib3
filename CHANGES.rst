@@ -1,6 +1,75 @@
 Changes
 =======
 
+1.26.12 (2022-08-22)
+--------------------
+
+* Deprecated the `urllib3[secure]` extra and the `urllib3.contrib.pyopenssl` module.
+  Both will be removed in v2.x. See this `GitHub issue <https://github.com/urllib3/urllib3/issues/2680>`_
+  for justification and info on how to migrate.
+
+
+1.26.11 (2022-07-25)
+--------------------
+
+* Fixed an issue where reading more than 2 GiB in a call to ``HTTPResponse.read`` would
+  raise an ``OverflowError`` on Python 3.9 and earlier.
+
+
+1.26.10 (2022-07-07)
+--------------------
+
+* Removed support for Python 3.5
+* Fixed an issue where a ``ProxyError`` recommending configuring the proxy as HTTP
+  instead of HTTPS could appear even when an HTTPS proxy wasn't configured.
+
+
+1.26.9 (2022-03-16)
+-------------------
+
+* Changed ``urllib3[brotli]`` extra to favor installing Brotli libraries that are still
+  receiving updates like ``brotli`` and ``brotlicffi`` instead of ``brotlipy``.
+  This change does not impact behavior of urllib3, only which dependencies are installed.
+* Fixed a socket leaking when ``HTTPSConnection.connect()`` raises an exception.
+* Fixed ``server_hostname`` being forwarded from ``PoolManager`` to ``HTTPConnectionPool``
+  when requesting an HTTP URL. Should only be forwarded when requesting an HTTPS URL.
+
+
+1.26.8 (2022-01-07)
+-------------------
+
+* Added extra message to ``urllib3.exceptions.ProxyError`` when urllib3 detects that
+  a proxy is configured to use HTTPS but the proxy itself appears to only use HTTP.
+* Added a mention of the size of the connection pool when discarding a connection due to the pool being full.
+* Added explicit support for Python 3.11.
+* Deprecated the ``Retry.MAX_BACKOFF`` class property in favor of ``Retry.DEFAULT_MAX_BACKOFF``
+  to better match the rest of the default parameter names. ``Retry.MAX_BACKOFF`` is removed in v2.0.
+* Changed location of the vendored ``ssl.match_hostname`` function from ``urllib3.packages.ssl_match_hostname``
+  to ``urllib3.util.ssl_match_hostname`` to ensure Python 3.10+ compatibility after being repackaged
+  by downstream distributors.
+* Fixed absolute imports, all imports are now relative.
+
+
+1.26.7 (2021-09-22)
+-------------------
+
+* Fixed a bug with HTTPS hostname verification involving IP addresses and lack
+  of SNI. (Issue #2400)
+* Fixed a bug where IPv6 braces weren't stripped during certificate hostname
+  matching. (Issue #2240)
+
+
+1.26.6 (2021-06-25)
+-------------------
+
+* Deprecated the ``urllib3.contrib.ntlmpool`` module. urllib3 is not able to support
+  it properly due to `reasons listed in this issue <https://github.com/urllib3/urllib3/issues/2282>`_.
+  If you are a user of this module please leave a comment.
+* Changed ``HTTPConnection.request_chunked()`` to not erroneously emit multiple
+  ``Transfer-Encoding`` headers in the case that one is already specified.
+* Fixed typo in deprecation message to recommend ``Retry.DEFAULT_ALLOWED_METHODS``.
+
+
 1.26.5 (2021-05-26)
 -------------------
 
