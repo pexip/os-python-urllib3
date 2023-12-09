@@ -1,3 +1,9 @@
+python-urllib3 (1.26.12-1pexip2) pexip-bookworm; urgency=medium
+
+  * Bookworm build for product distribution
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Sat, 09 Dec 2023 22:57:54 +0000
+
 python-urllib3 (1.26.12-1pexip1) pexip-bookworm; urgency=medium
 
   * Initial bookworm build
