@@ -26,11 +26,12 @@ Patch-Name: 01_do-not-use-embedded-python-six.patch
  src/urllib3/util/response.py                     | 2 +-
  src/urllib3/util/retry.py                        | 2 +-
  src/urllib3/util/ssl_.py                         | 2 +-
+ src/urllib3/util/ssltransport.py                 | 2 +-
  src/urllib3/util/url.py                          | 2 +-
  test/__init__.py                                 | 2 +-
  test/test_collections.py                         | 2 +-
  test/test_compatibility.py                       | 2 +-
- test/test_connectionpool.py                      | 7 ++++---
+ test/test_connectionpool.py                      | 6 +++---
  test/test_fields.py                              | 2 +-
  test/test_filepost.py                            | 2 +-
  test/test_queue_monkeypatch.py                   | 2 +-
@@ -41,7 +42,7 @@ Patch-Name: 01_do-not-use-embedded-python-six.patch
  test/with_dummyserver/test_connectionpool.py     | 4 ++--
  test/with_dummyserver/test_https.py              | 2 +-
  test/with_dummyserver/test_socketlevel.py        | 2 +-
- 35 files changed, 53 insertions(+), 50 deletions(-)
+ 36 files changed, 53 insertions(+), 51 deletions(-)
 
 diff --git a/dummyserver/handlers.py b/dummyserver/handlers.py
 index c90c2fc..f8bdf25 100644
@@ -339,6 +340,19 @@ index 8f86781..11183c4 100644
  from .url import BRACELESS_IPV6_ADDRZ_RE, IPV4_RE
  
  SSLContext = None
+diff --git a/src/urllib3/util/ssltransport.py b/src/urllib3/util/ssltransport.py
+index 4a7105d..eaa2b60 100644
+--- a/src/urllib3/util/ssltransport.py
++++ b/src/urllib3/util/ssltransport.py
+@@ -3,7 +3,7 @@ import socket
+ import ssl
+ 
+ from ..exceptions import ProxySchemeUnsupported
+-from ..packages import six
++import six
+ 
+ SSL_BLOCKSIZE = 16384
+ 
 diff --git a/src/urllib3/util/url.py b/src/urllib3/util/url.py
 index b667c16..515d6fc 100644
 --- a/src/urllib3/util/url.py
@@ -392,7 +406,7 @@ index 58a9ab5..0c86d4d 100644
  
  
 diff --git a/test/test_connectionpool.py b/test/test_connectionpool.py
-index 872d01c..3a9fb9d 100644
+index 872d01c..ad70c45 100644
 --- a/test/test_connectionpool.py
 +++ b/test/test_connectionpool.py
 @@ -7,6 +7,9 @@ from test import SHORT_TIMEOUT
@@ -405,14 +419,13 @@ index 872d01c..3a9fb9d 100644
  
  from dummyserver.server import DEFAULT_CA
  from urllib3._collections import HTTPHeaderDict
-@@ -26,9 +29,7 @@ from urllib3.exceptions import (
+@@ -26,9 +29,6 @@ from urllib3.exceptions import (
      SSLError,
      TimeoutError,
  )
 -from urllib3.packages.six.moves import http_client as httplib
 -from urllib3.packages.six.moves.http_client import HTTPException
 -from urllib3.packages.six.moves.queue import Empty
-+from urllib3.packages.ssl_match_hostname import CertificateError
  from urllib3.response import HTTPResponse
  from urllib3.util.ssl_match_hostname import CertificateError
  from urllib3.util.timeout import Timeout

@@ -1,3 +1,19 @@
+python-urllib3 (1.26.12-1+deb12u1) bookworm; urgency=medium
+
+  * Non-maintainer upload.
+  * Fix CVE-2023-43804: Cookie request header isn't stripped during
+    cross-origin redirects. (Closes: #1053626)
+  * Fix CVE-2023-45803: Request body not stripped after redirect from 303
+    status changes request method to GET. (Closes: #1054226)
+  * Fix CVE-2024-37891: Proxy-Authorization request header isn't stripped
+    during cross-origin redirects. (Closes: #1074149)
+  * Use system 'six' module in urllib3.util.ssltransport. (Closes: #1089507)
+  * Fix test/test_connectionpool.py (currently ignored).
+  * Adjust d/salsa-ci.yml for bookworm.
+  * Adjust d/gbp.conf for bookworm.
+
+ -- Guilhem Moulin <guilhem@debian.org>  Sat, 21 Dec 2024 15:28:17 +0100
+
 python-urllib3 (1.26.12-1) unstable; urgency=medium
 
   * Team upload.
