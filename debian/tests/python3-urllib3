@@ -2,23 +2,17 @@
 set -efu
 
 export PYTHONWARNINGS=d
+# Use patched hypercorn; see https://github.com/urllib3/urllib3/issues/3334
+export PYTHONPATH=$(pwd)/debian/vendor
+# Use longer timeouts, see https://github.com/urllib3/urllib3/issues/3164
+export CI=1
 
 python3_all="$(py3versions -s 2>/dev/null)"
 
-cp -r test "$AUTOPKGTEST_TMP/"
+cp -r dummyserver test "$AUTOPKGTEST_TMP/"
 cd "$AUTOPKGTEST_TMP"
-rm -f test/conftest.py
 
 for py in $python3_all; do
     echo "=== $py ==="
-    $py -m pytest --verbose --ignore=test/appengine \
-    --ignore=test/contrib/test_pyopenssl.py \
-    --ignore=test/contrib/test_securetransport.py \
-    --ignore=test/contrib/test_socks.py \
-    --ignore=test/test_connectionpool.py \
-    --ignore=test/test_ssl.py \
-    --ignore=test/test_ssltransport.py \
-    --ignore=test/with_dummyserver \
-    -k 'not test_recent_date and not test_respect_retry_after_header_sleep' 2>&1
-
+    $py -m pytest --verbose -k "not requires_network and not test_recent_date"
 done

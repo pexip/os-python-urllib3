@@ -5,17 +5,26 @@ Section: python
 Priority: optional
 Build-Depends:
  debhelper-compat (= 13),
- dh-python,
+ dh-sequence-python3,
+ pybuild-plugin-pyproject,
  python3-all,
- python3-brotli,
- python3-coverage,
- python3-idna,
- python3-mock,
- python3-pytest,
- python3-setuptools,
- python3-six,
- python3-tornado
-Standards-Version: 4.6.1
+ python3-brotli <!nocheck>,
+ python3-coverage <!nocheck>,
+ python3-cryptography <!nocheck>,
+ python3-hatch-vcs,
+ python3-hatchling,
+ python3-h2,
+ python3-httpx <!nocheck>,
+ python3-idna <!nocheck>,
+ python3-openssl <!nocheck>,
+ python3-pytest <!nocheck>,
+ python3-pytest-timeout <!nocheck>,
+ python3-quart <!nocheck>,
+ python3-quart-trio <!nocheck>,
+ python3-socks <!nocheck>,
+ python3-trio <!nocheck>,
+ python3-trustme <!nocheck>
+Standards-Version: 4.6.2
 Rules-Requires-Root: no
 Homepage: https://urllib3.readthedocs.org
 Vcs-Git: https://salsa.debian.org/python-team/packages/python-urllib3.git
@@ -23,10 +32,10 @@ Vcs-Browser: https://salsa.debian.org/python-team/packages/python-urllib3
 
 Package: python3-urllib3
 Architecture: all
+Multi-Arch: foreign
 Depends:
  ${misc:Depends},
  ${python3:Depends},
- python3-six
 Recommends:
  ca-certificates
 Suggests:
@@ -47,5 +56,3 @@ Description: HTTP library with thread-safe connection pooling for Python3
    - Thread-safe and sanity-safe.
    - Small and easy to understand codebase perfect for extending and
      building upon.
- .
- This package contains the Python 3 version of the library.

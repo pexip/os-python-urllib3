@@ -1,0 +1,31 @@
+From: Colin Watson <cjwatson@debian.org>
+Date: Thu, 9 Jan 2025 21:29:30 +0000
+Subject: SingleTLSLayerTestCase: Catch BrokenPipeError
+
+OpenSSL 3.4.0 returns `ERR_LIB_SYS` in some more situations than it used
+to.  In the case exercised by
+`SingleTLSLayerTestCase.test_close_after_handshake`,
+https://github.com/python/cpython/pull/127361 (also backported to the
+3.12 and 3.13 branches) turns this into `BrokenPipeError`.  It seems
+reasonable to treat this in the same way as `ConnectionAbortedError` and
+`ConnectionResetError`.
+
+Forwarded: https://github.com/urllib3/urllib3/pull/3547
+Last-Update: 2025-01-17
+---
+ test/test_ssltransport.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/test_ssltransport.py b/test/test_ssltransport.py
+index 4f0880d..0097179 100644
+--- a/test/test_ssltransport.py
++++ b/test/test_ssltransport.py
+@@ -122,7 +122,7 @@ class SingleTLSLayerTestCase(SocketDummyServerTestCase):
+                         return
+                     validate_request(request)
+                     ssock.send(sample_response())
+-            except (ConnectionAbortedError, ConnectionResetError):
++            except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError):
+                 return
+ 
+         chosen_handler = handler if handler else socket_handler
