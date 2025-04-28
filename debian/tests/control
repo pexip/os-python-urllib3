@@ -1,11 +1,19 @@
 Tests: python3-urllib3
+Restrictions: allow-stderr
 Depends:
  python3-all,
  python3-brotli,
  python3-coverage,
+ python3-cryptography,
+ python3-h2,
+ python3-httpx,
  python3-idna,
- python3-mock,
+ python3-openssl,
  python3-pytest,
- python3-six,
- python3-tornado,
+ python3-pytest-timeout,
+ python3-quart,
+ python3-quart-trio,
+ python3-socks,
+ python3-trio,
+ python3-trustme,
  python3-urllib3,

@@ -1,0 +1,23 @@
+From: Colin Watson <cjwatson@debian.org>
+Date: Tue, 12 Nov 2024 23:47:03 +0000
+Subject: Mark test_http2_probe_blocked_per_thread with requires_network
+
+It fails if it can't connect to `TARPIT_HOST`.
+
+Last-Update: 2024-11-12
+---
+ test/with_dummyserver/test_https.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/test/with_dummyserver/test_https.py b/test/with_dummyserver/test_https.py
+index 162d089..6702f3a 100644
+--- a/test/with_dummyserver/test_https.py
++++ b/test/with_dummyserver/test_https.py
+@@ -1049,6 +1049,7 @@ class BaseTestHTTPS(HTTPSHypercornDummyServerTestCase):
+         finally:
+             urllib3.http2.extract_from_urllib3()
+ 
++    @requires_network()
+     def test_http2_probe_blocked_per_thread(self) -> None:
+         state, current_thread, last_action = None, None, time.perf_counter()
+ 
