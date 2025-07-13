@@ -1,3 +1,14 @@
+python-urllib3 (2.3.0-3) unstable; urgency=medium
+
+  * Team upload.
+  * CVE-2025-50181: Fix a security issue where restricting the maximum
+    number of followed redirects at the `urllib3.PoolManager` level via the
+    `retries` parameter did not work (closes: #1108076).
+  * CVE-2025-50182: Make the Node.js runtime respect redirect parameters
+    such as `retries` and `redirects` (closes: #1108077).
+
+ -- Colin Watson <cjwatson@debian.org>  Sun, 13 Jul 2025 14:09:35 +0200
+
 python-urllib3 (2.3.0-2) unstable; urgency=medium
 
   * Team upload.
