@@ -1,3 +1,5 @@
 test_http2_probe_blocked_per_thread-requires_network.patch
 openssl-3.4.0.patch
 httpx-0.28.patch
+CVE-2025-50181.patch
+CVE-2025-50182.patch
