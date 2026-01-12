@@ -3,3 +3,5 @@ openssl-3.4.0.patch
 httpx-0.28.patch
 CVE-2025-50181.patch
 CVE-2025-50182.patch
+CVE-2025-66418.patch
+CVE-2026-21441.patch
