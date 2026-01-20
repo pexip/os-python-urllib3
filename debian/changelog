@@ -1,3 +1,14 @@
+python-urllib3 (1.26.12-1+deb12u3) bookworm-security; urgency=high
+
+  * Non-maintainer upload by the Security Team.
+  * Prevent issue in HTTPResponse().read() when decoded_content is True and then
+    False Provided it has initialized eligible decoder(decompressor) and did
+    decode once (Closes: #1126002)
+  * fix missed coverage when calling read() having amt=None
+  * tests: Change expectations as the initial payload changed
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Tue, 20 Jan 2026 22:34:53 +0100
+
 python-urllib3 (1.26.12-1+deb12u2) bookworm-security; urgency=high
 
   * Non-maintainer upload by the Security Team.
