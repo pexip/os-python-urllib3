@@ -1,3 +1,21 @@
+python-urllib3 (1.26.12-1+pexip24u5+deb12u2) pexip; urgency=medium
+
+  * New upstream release with security fixes
+
+ -- Steve McIntyre <steve.mcintyre@pexip.com>  Tue, 20 Jan 2026 13:31:30 +0000
+
+python-urllib3 (1.26.12-1+deb12u2) bookworm-security; urgency=high
+
+  * Non-maintainer upload by the Security Team.
+  * Redirects are not disabled when retries are disabled on PoolManager
+    instantiation (CVE-2025-50181) (Closes: #1108076)
+  * Unbounded number of links in the decompression chain (CVE-2025-66418)
+    (Closes: #1122030)
+  * Decompression-bomb safeguards bypassed when following HTTP redirects
+    (streaming API) (CVE-2026-21441) (Closes: #1125062)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Mon, 12 Jan 2026 22:53:55 +0100
+
 python-urllib3 (1.26.12-1+pexip24u4+deb12u1) pexip; urgency=medium
 
   * New upstream release
