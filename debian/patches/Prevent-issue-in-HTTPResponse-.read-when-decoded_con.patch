@@ -1,0 +1,89 @@
+From: Ousret <ahmed.tahri@cloudnursery.dev>
+Date: Thu, 17 Nov 2022 01:40:19 +0100
+Subject: Prevent issue in HTTPResponse().read() when decoded_content is True
+ and then False Provided it has initialized eligible decoder(decompressor) and
+ did decode once
+Origin: https://github.com/urllib3/urllib3/commit/cefd1dbba6a20ea4f017e6e472f9ada3a8a743e0
+
+[Salvatore Bonaccorso: Backport for code before c35033f6cc54 ("Standardize
+HTTPResponse.read(X) behavior regardless of compression").]
+---
+ src/urllib3/response.py   | 12 ++++++++++++
+ test/test_response.py     | 35 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 48 insertions(+)
+ create mode 100644 changelog/2800.bugfix.rst
+
+--- a/src/urllib3/response.py
++++ b/src/urllib3/response.py
+@@ -237,6 +237,7 @@ class HTTPResponse(io.IOBase):
+         self.reason = reason
+         self.strict = strict
+         self.decode_content = decode_content
++        self._has_decoded_content = False
+         self.retries = retries
+         self.enforce_content_length = enforce_content_length
+         self.auto_close = auto_close
+@@ -413,11 +414,17 @@ class HTTPResponse(io.IOBase):
+         Decode the data passed in and potentially flush the decoder.
+         """
+         if not decode_content:
++            if self._has_decoded_content:
++                raise RuntimeError(
++                    "Calling read(decode_content=False) is not supported after "
++                    "read(decode_content=True) was called."
++                )
+             return data
+ 
+         try:
+             if self._decoder:
+                 data = self._decoder.decompress(data)
++                self._has_decoded_content = True
+         except self.DECODER_ERROR_CLASSES as e:
+             content_encoding = self.headers.get("content-encoding", "").lower()
+             raise DecodeError(
+--- a/test/test_response.py
++++ b/test/test_response.py
+@@ -453,6 +453,43 @@ class TestResponse(object):
+             next(reader)
+         assert re.match("I/O operation on closed file.?", str(ctx.value))
+ 
++    def test_read_with_illegal_mix_decode_toggle(self):
++        compress = zlib.compressobj(6, zlib.DEFLATED, -zlib.MAX_WBITS)
++        data = compress.compress(b"foo")
++        data += compress.flush()
++
++        fp = BytesIO(data)
++
++        resp = HTTPResponse(
++            fp, headers={"content-encoding": "deflate"}, preload_content=False
++        )
++
++        assert resp.read(1) == b""
++        assert resp.read(1) == b"f"
++
++        with pytest.raises(
++            RuntimeError,
++            match=(
++                r"Calling read\(decode_content=False\) is not supported after "
++                r"read\(decode_content=True\) was called"
++            ),
++        ):
++            resp.read(1, decode_content=False)
++
++    def test_read_with_mix_decode_toggle(self):
++        compress = zlib.compressobj(6, zlib.DEFLATED, -zlib.MAX_WBITS)
++        data = compress.compress(b"foo")
++        data += compress.flush()
++
++        fp = BytesIO(data)
++
++        resp = HTTPResponse(
++            fp, headers={"content-encoding": "deflate"}, preload_content=False
++        )
++        resp.read(1, decode_content=False)
++        assert resp.read(1, decode_content=True) == b""
++        assert resp.read(1, decode_content=True) == b"o"
++
+     def test_streaming(self):
+         fp = BytesIO(b"foo")
+         resp = HTTPResponse(fp, preload_content=False)

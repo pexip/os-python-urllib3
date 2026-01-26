@@ -1,0 +1,56 @@
+From: Ousret <ahmed.tahri@cloudnursery.dev>
+Date: Sun, 20 Nov 2022 13:56:21 +0100
+Subject: apply suggestion from @pquentin + had to change expectations as the
+ initial payload changed
+Origin: https://github.com/urllib3/urllib3/commit/698df9ef7e88354e8ec9392471189a168fb31521
+
+[Salvatore Bonaccorso: Backport for code before c35033f6cc54 ("Standardize
+HTTPResponse.read(X) behavior regardless of compression").]
+---
+ test/test_response.py | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+--- a/test/test_response.py
++++ b/test/test_response.py
+@@ -454,9 +454,7 @@ class TestResponse(object):
+         assert re.match("I/O operation on closed file.?", str(ctx.value))
+ 
+     def test_read_with_illegal_mix_decode_toggle(self):
+-        compress = zlib.compressobj(6, zlib.DEFLATED, -zlib.MAX_WBITS)
+-        data = compress.compress(b"foo")
+-        data += compress.flush()
++        data = zlib.compress(b"foo")
+ 
+         fp = BytesIO(data)
+ 
+@@ -464,7 +462,7 @@ class TestResponse(object):
+             fp, headers={"content-encoding": "deflate"}, preload_content=False
+         )
+ 
+-        assert resp.read(1) == b""
++        assert resp.read(3) == b""
+         assert resp.read(1) == b"f"
+ 
+         with pytest.raises(
+@@ -486,18 +484,16 @@ class TestResponse(object):
+             resp.read(decode_content=False)
+ 
+     def test_read_with_mix_decode_toggle(self):
+-        compress = zlib.compressobj(6, zlib.DEFLATED, -zlib.MAX_WBITS)
+-        data = compress.compress(b"foo")
+-        data += compress.flush()
++        data = zlib.compress(b"foo")
+ 
+         fp = BytesIO(data)
+ 
+         resp = HTTPResponse(
+             fp, headers={"content-encoding": "deflate"}, preload_content=False
+         )
+-        resp.read(1, decode_content=False)
++        assert resp.read(2, decode_content=False) is not None
+         assert resp.read(1, decode_content=True) == b""
+-        assert resp.read(1, decode_content=True) == b"o"
++        assert resp.read(1, decode_content=True) == b"f"
+ 
+     def test_streaming(self):
+         fp = BytesIO(b"foo")

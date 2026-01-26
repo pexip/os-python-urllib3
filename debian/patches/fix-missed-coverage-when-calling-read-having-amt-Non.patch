@@ -1,0 +1,32 @@
+From: Ousret <ahmed.tahri@cloudnursery.dev>
+Date: Thu, 17 Nov 2022 01:58:12 +0100
+Subject: fix missed coverage when calling read() having amt=None
+Origin: https://github.com/urllib3/urllib3/commit/4acccf76c2892e80aebb5840f7de1460a4c64a61
+
+---
+ test/test_response.py | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/test/test_response.py b/test/test_response.py
+index 454ed60c7813..85aa6986771d 100644
+--- a/test/test_response.py
++++ b/test/test_response.py
+@@ -587,6 +587,15 @@ class TestResponse:
+         ):
+             resp.read(1, decode_content=False)
+ 
++        with pytest.raises(
++            RuntimeError,
++            match=(
++                r"Calling read\(decode_content=False\) is not supported after "
++                r"read\(decode_content=True\) was called"
++            ),
++        ):
++            resp.read(decode_content=False)
++
+     def test_read_with_mix_decode_toggle(self):
+         compress = zlib.compressobj(6, zlib.DEFLATED, -zlib.MAX_WBITS)
+         data = compress.compress(b"foo")
+-- 
+2.51.0
+
