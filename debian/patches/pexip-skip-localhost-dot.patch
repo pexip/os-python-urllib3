@@ -1,6 +1,11 @@
+From 3a39023a6740697db829d4b9118ea44c9066d67c Mon Sep 17 00:00:00 2001
+From: Huw Jones <huw@pexip.com>
+Date: Wed, 5 Nov 2025 16:35:40 +0000
+Subject: [PATCH] TestHeaders: skip test that fails in CI, but passes locally
+
 --- a/test/with_dummyserver/test_socketlevel.py
 +++ b/test/with_dummyserver/test_socketlevel.py
-@@ -1988,6 +1988,7 @@
+@@ -1988,6 +1988,7 @@ class TestHeaders(SocketDummyServerTestCase):
              pool.request("GET", "/", headers=OrderedDict(expected_request_headers))
              assert expected_request_headers == filter_non_x_headers(self.parsed_headers)
  
