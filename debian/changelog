@@ -1,3 +1,13 @@
+python-urllib3 (2.3.0-3+deb13u1) trixie-security; urgency=high
+
+  * Non-maintainer upload by the Security Team.
+  * Unbounded number of links in the decompression chain (CVE-2025-66418)
+    (Closes: #1122030)
+  * Decompression-bomb safeguards bypassed when following HTTP redirects
+    (streaming API) (CVE-2026-21441) (Closes: #1125062)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Mon, 12 Jan 2026 22:38:24 +0100
+
 python-urllib3 (2.3.0-3+pexip25u3) pexip-trixie; urgency=medium
 
   * Trixie build for product distribution
