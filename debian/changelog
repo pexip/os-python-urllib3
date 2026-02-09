@@ -1,3 +1,9 @@
+python-urllib3 (2.3.0-3+pexip25u4+deb13u1) pexip-trixie; urgency=medium
+
+  * New upstream release
+
+ -- Huw Jones <huw@pexip.com>  Mon, 09 Feb 2026 17:54:59 +0000
+
 python-urllib3 (2.3.0-3+deb13u1) trixie-security; urgency=high
 
   * Non-maintainer upload by the Security Team.
