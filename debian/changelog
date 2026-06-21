@@ -1,3 +1,9 @@
+python-urllib3 (2.3.0-3+deb13u2) trixie-security; urgency=medium
+
+  * CVE-2026-44431 (Closes: #1136653)
+
+ -- Moritz Mühlenhoff <jmm@debian.org>  Sun, 21 Jun 2026 18:46:48 +0200
+
 python-urllib3 (2.3.0-3+deb13u1) trixie-security; urgency=high
 
   * Non-maintainer upload by the Security Team.
