@@ -1,3 +1,9 @@
+python-urllib3 (2.3.0-3+pexip25u5+deb13u2) pexip-trixie; urgency=medium
+
+  * New upstream release
+
+ -- Huw Jones <huw@pexip.com>  Mon, 06 Jul 2026 12:16:06 +0100
+
 python-urllib3 (2.3.0-3+deb13u2) trixie-security; urgency=medium
 
   * CVE-2026-44431 (Closes: #1136653)
